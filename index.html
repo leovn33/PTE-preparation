@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PTE Compass</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
@@ -89,8 +94,17 @@
   }
   @media (max-width:840px){
     /* A full nav+vocab-height sidebar is too tall to pin at the top of a phone screen —
-       sticky here would float over (and swallow taps meant for) the content below it. */
-    .sidebar{border-right:none; border-bottom:1px solid var(--line);}
+       sticky here would float over (and swallow taps meant for) the content below it.
+       Instead, the nav becomes a horizontally-scrollable chip row so it takes minimal
+       vertical space and the user reaches the actual content with one swipe/scroll. */
+    .sidebar{border-right:none; border-bottom:1px solid var(--line); padding:14px 14px 12px; gap:10px;}
+    .brand{padding:0;}
+    nav.navlist{flex-direction:row; overflow-x:auto; gap:6px; padding-bottom:2px; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+    nav.navlist::-webkit-scrollbar{display:none;}
+    .navgroup-label{display:none;}
+    .navitem{width:auto; flex:none; white-space:nowrap; padding:7px 12px;}
+    .level-badge{margin-top:0; padding:8px 12px;}
+    .level-badge .val{font-size:16px; margin-top:0;}
   }
   .brand{display:flex; align-items:baseline; gap:8px; padding:0 4px;}
   .brand .mark{
@@ -125,7 +139,16 @@
 
   /* Main */
   main{padding:32px 40px 80px; max-width:980px;}
-  @media (max-width:840px){ main{padding:22px 18px 60px;} }
+  @media (max-width:840px){
+    main{padding:20px 16px 50px;}
+    h1{font-size:22px;}
+    .lede{font-size:13.5px;}
+    .card{padding:14px;}
+    .qcard{padding:13px;}
+    .flashcard{padding:18px; min-height:120px;}
+    table{font-size:12.5px;}
+    th,td{padding:7px 8px;}
+  }
   .view{display:none;}
   .view.active{display:block;}
   .eyebrow{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--brass); font-weight:700; margin-bottom:6px;}
@@ -171,6 +194,7 @@
   .pill.bad{background:var(--danger-soft); color:var(--danger);}
   .pill.a1{background:var(--teal-soft); color:var(--teal);}
   .pill.c2{background:var(--danger-soft); color:var(--danger);}
+  .pill.pte{background:var(--brass-soft); color:var(--brass);}
 
   table{width:100%; border-collapse:collapse; font-size:13.5px;}
   th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-500); padding:8px 10px; border-bottom:1px solid var(--line);}
@@ -277,6 +301,13 @@
   .strategy-item{border-left:3px solid var(--brass); padding:4px 0 4px 14px; margin-bottom:14px;}
   .strategy-item .k{font-size:11px; color:var(--ink-500); text-transform:uppercase; letter-spacing:.05em;}
 
+  .concept-cat{margin-bottom:28px;}
+  .concept-cat h3{font-size:15px; color:var(--brass); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:8px;}
+  .concept-item{border-left:3px solid var(--line); padding:4px 0 4px 14px; margin-bottom:16px;}
+  .concept-item.pte{border-left-color:var(--brass);}
+  .concept-item .ctitle{font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+  .concept-item .cbody{font-size:13.5px; color:var(--ink-700); line-height:1.7;}
+
   .progressbar{height:7px; border-radius:99px; background:var(--line-soft); overflow:hidden;}
   .progressbar > i{display:block; height:100%; background:var(--teal); border-radius:99px;}
 
@@ -323,6 +354,8 @@
   .gate-card .btn{width:100%; justify-content:center; margin-top:18px;}
   .gate-card .skip{display:block; text-align:center; margin-top:12px; font-size:12px; color:var(--ink-500); cursor:pointer; text-decoration:underline; background:none; border:none;}
 </style>
+</head>
+<body>
 
 <div class="gate" id="gateOverlay" style="display:none;">
   <div class="gate-card">
@@ -449,10 +482,10 @@
     <!-- GRAMMAR -->
     <section class="view" id="view-grammar">
       <div class="eyebrow">Grammar</div>
-      <h1>레벨별 문법</h1>
-      <p class="lede">Write Essay, Summarize Written/Spoken Text, Write from Dictation 등에서 감점의 가장 큰 원인은 문법 오류입니다. 핵심 포인트만 짧게 학습하고 바로 문제로 확인하세요.</p>
-      <div class="tabs" id="gramTabs"></div>
-      <div id="gramHost"></div>
+      <h1>영문법 총정리 &amp; 레벨별 연습</h1>
+      <p class="lede">Write Essay, Summarize Written/Spoken Text, Write from Dictation 등에서 감점의 가장 큰 원인은 문법 오류입니다. 먼저 개념을 정리하고, 레벨별 문제(문법당 10문항)로 바로 확인하세요. <span class="pill pte" style="margin-left:2px;">PTE 빈출</span> 표시는 PTE 시험에 특히 자주 등장하는 포인트입니다.</p>
+      <div class="tabs" id="gramModeTabs"></div>
+      <div id="gramModeHost"></div>
     </section>
 
     <!-- SPEAKING -->
@@ -1665,77 +1698,374 @@ const VOCAB = {
 };
 
 /* ---------- GRAMMAR ---------- */
+const GRAMMAR_CONCEPTS = [
+  {cat:"문장의 기본 구조", items:[
+    {title:"품사 (Parts of Speech)", pte:false,
+     body:"영어 문장은 명사(noun)·대명사(pronoun)·동사(verb)·형용사(adjective)·부사(adverb)·전치사(preposition)·접속사(conjunction)·감탄사(interjection) 8품사로 구성됩니다. 한 단어가 문맥에 따라 여러 품사로 쓰이는 경우가 많습니다 (예: work는 명사/동사, fast는 형용사/부사)."},
+    {title:"문장의 5형식", pte:true,
+     body:"1형식(S+V), 2형식(S+V+C, 주격보어), 3형식(S+V+O), 4형식(S+V+IO+DO, 간접·직접목적어), 5형식(S+V+O+OC, 목적격보어)으로 구분합니다. Write Essay·Summarize Written Text 채점 시 '문장 구조의 다양성'이 평가 항목에 포함되므로, 2형식·5형식 문장을 적절히 섞어 쓰면 유리합니다."},
+    {title:"구(Phrase)와 절(Clause)", pte:true,
+     body:"구는 주어+동사가 없는 단어 묶음(예: in the morning), 절은 주어+동사를 갖춘 단위입니다. 절은 독립절(그 자체로 완전한 문장)과 종속절(명사절·형용사절·부사절, 혼자서는 불완전)로 나뉩니다. Reorder Paragraph 문제는 절 사이의 논리적 연결(접속사, 대명사 지시 관계)을 추적하는 능력을 요구합니다."},
+  ]},
+  {cat:"시제 (Tense)", items:[
+    {title:"현재/과거/미래 단순시제", pte:true,
+     body:"현재시제는 반복적 습관·일반적 사실(He works here), 과거시제는 끝난 특정 시점(She called yesterday), 미래는 will/be going to로 나타냅니다. Fill in the Blanks(Reading·Listening)에서 문장 속 시간 부사(yesterday, every day, next week)를 근거로 시제를 고르는 문항이 자주 출제됩니다."},
+    {title:"진행형 (Progressive)", pte:false,
+     body:"be + -ing로 '특정 시점에 진행 중인 동작'을 나타냅니다. 현재진행(now, at the moment), 과거진행(when he arrived, she was cooking), 미래진행(this time tomorrow) 순으로 확장됩니다. 상태동사(know, believe, own 등)는 원칙적으로 진행형을 쓰지 않습니다."},
+    {title:"현재완료 (Present Perfect)", pte:true,
+     body:"have/has + p.p. 형태로 '과거에 시작해 현재까지 이어지는 경험·결과·계속'을 나타냅니다. 신호어: already, yet, ever, never, since, for, just. 과거시제와 달리 '언제'인지 명시하지 않는 것이 핵심입니다. PTE Write from Dictation·Fill in the Blanks에서 자주 등장하는 최빈출 시제입니다."},
+    {title:"과거완료 (Past Perfect)", pte:true,
+     body:"had + p.p. 형태로 '과거의 특정 시점보다 더 이전에 일어난 일'을 나타냅니다 (대과거). 주로 by the time, before, after 등과 함께 두 과거 사건의 순서를 명확히 할 때 사용하며, Summarize Written Text에서 시간 순서를 압축해 표현할 때 유용합니다."},
+    {title:"완료진행형 (Perfect Progressive)", pte:false,
+     body:"have/has been + -ing(현재완료진행)은 '최근까지 계속되어 온 동작 자체'를 강조하며, had been + -ing(과거완료진행)은 과거의 한 시점까지 계속되던 동작을 나타냅니다. 완료형(계속된 결과)과 완료진행형(계속된 동작 자체)의 뉘앙스 차이에 유의하세요."},
+  ]},
+  {cat:"태 (Voice)", items:[
+    {title:"수동태 (Passive Voice)", pte:true,
+     body:"be + p.p. 구조로, 행위의 주체보다 대상이나 결과가 중요할 때 사용합니다. 학술적·격식적 글쓰기(Write Essay, Summarize Written Text)에서 매우 빈번하며, 시제는 be동사의 형태로 표현됩니다(is made, was made, has been made, will be made). 4형식·5형식 문장의 수동태 전환, that절을 포함한 수동태(It is believed that...) 패턴도 자주 출제됩니다."},
+    {title:"능동태 vs 수동태 선택", pte:true,
+     body:"행위자가 분명하고 중요하면 능동태, 행위자가 불분명하거나 결과·과정이 중요하면 수동태를 씁니다. Reading MCQ와 Fill in the Blanks에서 '동사의 태'를 묻는 문항이 자주 나오며, 목적어가 없는 자동사(happen, occur, arrive 등)는 수동태로 쓸 수 없다는 점에 유의해야 합니다."},
+  ]},
+  {cat:"조동사 (Modal Verbs)", items:[
+    {title:"능력·허가 (can/could/may)", pte:false,
+     body:"can은 능력·허가(She can swim / Can I leave early?), could는 과거의 능력 또는 정중한 요청, may는 격식적 허가·추측(It may rain)을 나타냅니다."},
+    {title:"의무·추측 (must/should/have to)", pte:true,
+     body:"must는 강한 의무·확신에 가까운 추측(He must be tired), should는 권고·기대, have to는 외부 요인에 의한 의무를 나타냅니다. 부정형의 의미 차이가 핵심입니다: must not(금지) vs don't have to(불필요, 의무 없음). Write Essay에서 제안·주장을 표현할 때 should/must의 정확한 사용이 채점에 영향을 줍니다."},
+    {title:"조동사 + have p.p. (과거에 대한 추측·후회)", pte:true,
+     body:"must have p.p.(~했음이 틀림없다), can't have p.p.(~했을 리 없다), should have p.p.(~했어야 했는데 안 했다, 후회), might/could have p.p.(~했을 수도 있다)로 과거 사실에 대한 확신도나 후회를 표현합니다."},
+  ]},
+  {cat:"관계사 & 접속사", items:[
+    {title:"관계대명사 (who/which/that/whose)", pte:true,
+     body:"사람 선행사엔 who, 사물엔 which, 둘 다 가능한 that, 소유격엔 whose를 씁니다. 제한적 용법(콤마 없음, 선행사를 한정)과 계속적 용법(콤마 있음, 부가 설명)을 구분해야 하며, 계속적 용법에는 that을 쓸 수 없습니다. Reading Fill in the Blanks의 최빈출 문법 포인트 중 하나입니다."},
+    {title:"관계부사 (where/when/why/how)", pte:false,
+     body:"장소 선행사 뒤엔 where, 시간 선행사 뒤엔 when, 이유를 나타내는 선행사(the reason) 뒤엔 why, 방법을 나타낼 땐 the way 또는 how(둘을 함께 쓰지 않음) 를 사용합니다."},
+    {title:"등위접속사 & 상관접속사", pte:false,
+     body:"and/but/or/so/for/nor/yet(FANBOYS)는 대등한 요소를 연결하며, both A and B, either A or B, neither A nor B, not only A but also B 같은 상관접속사는 A와 B의 형태(품사·시제)를 일치시켜야 합니다."},
+    {title:"종속접속사 (부사절)", pte:true,
+     body:"시간(when, while, before, after, since), 이유(because, as, since), 조건(if, unless, provided that), 양보(although, even though, while)를 나타내는 접속사로 부사절을 이끕니다. Reorder Paragraph에서 however, therefore, in contrast 같은 연결어의 논리 관계를 파악하는 것이 핵심 전략입니다."},
+  ]},
+  {cat:"준동사 (Verbals)", items:[
+    {title:"to부정사 vs 동명사", pte:true,
+     body:"want/decide/plan/hope/agree 등은 to부정사를, enjoy/finish/avoid/suggest/mind 등은 동명사를 목적어로 취합니다. remember/forget/stop/try는 to부정사와 동명사에 따라 의미가 달라지는 대표적 동사입니다 (remember to do: 할 일을 기억함 / remember doing: 한 것을 기억함)."},
+    {title:"분사구문 (Participial Phrases)", pte:true,
+     body:"부사절의 접속사와 주어를 생략하고 동사를 분사(-ing/p.p.)로 바꿔 문장을 간결하게 만드는 구문입니다. 능동 의미면 현재분사(-ing), 수동 의미면 과거분사(p.p.)를 씁니다. Write Essay·Summarize Written Text에서 문장을 압축할 때 유용하며 고득점 문장 구조로 평가됩니다."},
+    {title:"사역동사 & 지각동사", pte:false,
+     body:"make/have/let(사역동사)은 목적어 뒤에 동사원형을, get은 to부정사를 씁니다(get him to leave). see/watch/hear/feel(지각동사)은 목적어 뒤에 동사원형(전체 동작) 또는 -ing(진행 중인 동작 일부)를 씁니다."},
+  ]},
+  {cat:"가정법 (Conditionals & Subjunctive)", items:[
+    {title:"1형식 · 2형식 조건문", pte:true,
+     body:"1형식(현실적 미래): If + 현재시제, will + 동사원형. 2형식(현재 사실의 반대/비현실적 가정): If + 과거시제, would + 동사원형. 조건절에는 미래시제(will)를 쓰지 않는다는 점이 가장 자주 틀리는 포인트입니다."},
+    {title:"3형식 조건문 & 혼합 조건문", pte:true,
+     body:"3형식(과거 사실의 반대): If + had p.p., would have p.p. 혼합 조건문은 '과거의 원인이 현재까지 영향을 미칠 때' 사용하며 If + had p.p., would + 동사원형(현재형) 구조를 취합니다."},
+    {title:"도치 가정법 (If 생략)", pte:false,
+     body:"격식체에서는 If를 생략하고 주어-동사를 도치시킬 수 있습니다: Had I known → If I had known, Were I you → If I were you, Should you need help → If you should need help."},
+  ]},
+  {cat:"도치 & 강조", items:[
+    {title:"부정어 도치", pte:true,
+     body:"Never, Rarely, Seldom, Not only, Little, Under no circumstances 등 부정/제한 의미의 부사(구)가 문장 맨 앞에 오면 '조동사+주어' 어순으로 도치됩니다: Never have I seen such a thing. 격식체 글쓰기(Write Essay)에서 강조 효과를 낼 때 사용하면 고득점에 유리합니다."},
+    {title:"강조구문 (It is ~ that)", pte:false,
+     body:"It is/was + 강조하고 싶은 요소 + that(사람일 경우 who도 가능) + 나머지로 특정 성분을 강조합니다: It was John who broke the window. (John을 강조)"},
+  ]},
+  {cat:"관사 & 전치사", items:[
+    {title:"관사 a/an/the", pte:true,
+     body:"처음 언급되거나 불특정한 단수 가산명사엔 a/an, 이미 언급됐거나 맥락상 유일한 대상, 최상급 앞에는 the를 씁니다. 복수형·불가산명사의 일반적 진술에는 관사를 생략합니다. Reading Fill in the Blanks에서 매우 빈번하게 출제됩니다."},
+    {title:"전치사 (시간 · 장소)", pte:true,
+     body:"시간: 특정 시각/시점엔 at(at 3pm), 날짜/요일엔 on(on Monday), 월/계절/연도엔 in(in July). 장소: 지점엔 at, 표면 위엔 on, 공간 내부엔 in을 씁니다. 전치사는 문맥적 관용어(collocation)로 암기가 필요합니다."},
+  ]},
+  {cat:"비교 & 양보", items:[
+    {title:"비교급 & 최상급", pte:false,
+     body:"짧은 형용사/부사는 -er/-est(taller, tallest), 긴 단어는 more/most를 붙입니다(more important). as + 원급 + as(동등 비교), the + 비교급, the + 비교급(~할수록 더 ~하다) 구문도 함께 익혀두세요."},
+    {title:"복합관계사 & 양보절", pte:false,
+     body:"whoever/whatever/whichever(~하는 누구든/무엇이든)는 명사절 또는 양보 부사절을 이끌며, no matter how/what/who와 however도 '~에도 불구하고'라는 양보의 의미로 쓰입니다: However difficult it is, we must try."},
+  ]},
+];
+
 const GRAMMAR = {
   A2:[
-    {title:"현재완료 vs 과거시제", explain:"과거시제는 '끝난 특정 시점'(yesterday, in 2019), 현재완료(have/has + p.p.)는 '현재까지 이어지는 경험/결과'(already, since, for, ever)에 씁니다.",
+    {title:"현재완료 vs 과거시제", pte:true,
+      explain:"과거시제는 '끝난 특정 시점'(yesterday, in 2019), 현재완료(have/has + p.p.)는 '현재까지 이어지는 경험/결과'(already, since, for, ever)에 씁니다.",
       qs:[
         {q:"I ___ to Australia twice.", options:["went","have been","am going","go"], answer:1, explain:"횟수 경험은 현재완료(have been)."},
         {q:"She ___ the report yesterday.", options:["has finished","finishes","finished","finish"], answer:2, explain:"yesterday는 특정 과거 시점 → 과거시제."},
         {q:"They ___ here since 2020.", options:["lived","live","have lived","are living"], answer:2, explain:"since + 시작점 → 현재완료."},
         {q:"I ___ my keys — have you seen them?", options:["lost","have lost","lose","was losing"], answer:1, explain:"현재에 영향을 주는 결과 → 현재완료."},
-        {q:"He ___ the exam last month.", options:["has passed","passed","pass","passing"], answer:1, explain:"last month는 특정 과거 → 과거시제."}
+        {q:"He ___ the exam last month.", options:["has passed","passed","pass","passing"], answer:1, explain:"last month는 특정 과거 → 과거시제."},
+        {q:"We ___ this movie before.", options:["saw","have seen","see","were seeing"], answer:1, explain:"before(경험) → 현재완료."},
+        {q:"She ___ to Seoul in 2015.", options:["has moved","moved","moves","move"], answer:1, explain:"in 2015는 특정 과거 시점 → 과거시제."},
+        {q:"I ___ my homework already.", options:["did","have done","do","was doing"], answer:1, explain:"already → 현재완료."},
+        {q:"He ___ three books so far this year.", options:["read","has read","reads","is reading"], answer:1, explain:"so far → 현재완료."},
+        {q:"They ___ the museum last Sunday.", options:["have visited","visited","visit","visiting"], answer:1, explain:"last Sunday는 특정 과거 시점 → 과거시제."}
       ]},
-    {title:"관사 a / an / the", explain:"처음 언급하거나 특정하지 않은 단수 명사엔 a/an, 이미 언급됐거나 유일한 대상엔 the를 씁니다. 복수/불가산 명사의 일반적 진술엔 관사를 생략합니다.",
+    {title:"관사 a / an / the", pte:true,
+      explain:"처음 언급하거나 특정하지 않은 단수 명사엔 a/an, 이미 언급됐거나 유일한 대상엔 the를 씁니다. 복수/불가산 명사의 일반적 진술엔 관사를 생략합니다.",
       qs:[
         {q:"I saw ___ interesting movie last night.", options:["a","an","the","(no article)"], answer:1, explain:"모음 발음 시작(interesting) → an."},
         {q:"___ sun rises in the east.", options:["A","An","The","(no article)"], answer:2, explain:"유일한 대상 → the."},
         {q:"She works as ___ engineer.", options:["a","an","the","(no article)"], answer:1, explain:"모음 발음(engineer) → an."},
         {q:"___ water is essential for life.", options:["A","An","The","(no article)"], answer:3, explain:"불가산명사의 일반 진술 → 무관사."},
-        {q:"I bought a book. ___ book was expensive.", options:["A","An","The","(no article)"], answer:2, explain:"이미 언급된 대상 → the."}
+        {q:"I bought a book. ___ book was expensive.", options:["A","An","The","(no article)"], answer:2, explain:"이미 언급된 대상 → the."},
+        {q:"Can you pass me ___ apple on the table?", options:["a","an","the","(no article)"], answer:2, explain:"특정한 하나(the table 위의 것) → the."},
+        {q:"He wants to become ___ doctor.", options:["a","an","the","(no article)"], answer:0, explain:"자음 발음(doctor) → a."},
+        {q:"___ dogs make loyal companions.", options:["A","An","The","(no article)"], answer:3, explain:"복수명사의 일반 진술 → 무관사."},
+        {q:"This is ___ most beautiful place I've ever seen.", options:["a","an","the","(no article)"], answer:2, explain:"최상급 앞 → the."},
+        {q:"She has ___ umbrella in her bag.", options:["a","an","the","(no article)"], answer:1, explain:"모음 발음(umbrella) → an."}
+      ]},
+    {title:"전치사 (시간 · 장소)", pte:true,
+      explain:"시간: 특정 시각엔 at(at 3pm), 날짜/요일엔 on(on Monday), 월/계절/연도엔 in(in July). 장소: 지점엔 at, 표면 위엔 on, 공간 내부엔 in을 씁니다.",
+      qs:[
+        {q:"The meeting starts ___ 9 a.m.", options:["in","on","at","by"], answer:2, explain:"정확한 시각 → at."},
+        {q:"Her birthday is ___ March.", options:["in","on","at","by"], answer:0, explain:"월 → in."},
+        {q:"We will meet ___ Friday afternoon.", options:["in","on","at","by"], answer:1, explain:"요일 → on."},
+        {q:"The keys are ___ the table.", options:["in","on","at","by"], answer:1, explain:"표면 위 → on."},
+        {q:"There is a spider ___ the box.", options:["in","on","at","by"], answer:0, explain:"공간 내부 → in."},
+        {q:"I'll see you ___ the bus stop.", options:["in","on","at","by"], answer:2, explain:"지점 → at."},
+        {q:"The store closes ___ 2027.", options:["in","on","at","by"], answer:0, explain:"연도 → in."},
+        {q:"She was born ___ July 4th.", options:["in","on","at","by"], answer:1, explain:"특정 날짜 → on."},
+        {q:"He arrived ___ the airport an hour early.", options:["in","on","at","by"], answer:2, explain:"특정 지점 → at."},
+        {q:"They live ___ a small town in the north.", options:["in","on","at","by"], answer:0, explain:"공간 내부(도시/마을) → in."}
+      ]},
+    {title:"to부정사 vs 동명사", pte:true,
+      explain:"want/decide/plan/hope/agree 등은 to부정사를, enjoy/finish/avoid/suggest/mind 등은 동명사를 목적어로 취합니다.",
+      qs:[
+        {q:"I enjoy ___ to music in the evening.", options:["listen","to listen","listening","listened"], answer:2, explain:"enjoy + 동명사."},
+        {q:"She decided ___ a new job.", options:["find","to find","finding","found"], answer:1, explain:"decide + to부정사."},
+        {q:"He finished ___ his report.", options:["write","to write","writing","wrote"], answer:2, explain:"finish + 동명사."},
+        {q:"They agreed ___ the new plan.", options:["accept","to accept","accepting","accepted"], answer:1, explain:"agree + to부정사."},
+        {q:"Would you mind ___ the door?", options:["close","to close","closing","closed"], answer:2, explain:"mind + 동명사."},
+        {q:"We hope ___ you again soon.", options:["see","to see","seeing","saw"], answer:1, explain:"hope + to부정사."},
+        {q:"I avoid ___ coffee at night.", options:["drink","to drink","drinking","drank"], answer:2, explain:"avoid + 동명사."},
+        {q:"She wants ___ abroad next year.", options:["study","to study","studying","studied"], answer:1, explain:"want + to부정사."},
+        {q:"He suggested ___ a break.", options:["take","to take","taking","took"], answer:2, explain:"suggest + 동명사."},
+        {q:"They plan ___ the house next month.", options:["sell","to sell","selling","sold"], answer:1, explain:"plan + to부정사."}
+      ]},
+    {title:"비교급 & 최상급", pte:false,
+      explain:"짧은 형용사/부사는 -er/-est, 긴 단어는 more/most를 붙입니다. as + 원급 + as는 동등 비교를 나타냅니다.",
+      qs:[
+        {q:"This bag is ___ than that one.", options:["cheap","cheaper","cheapest","more cheap"], answer:1, explain:"짧은 형용사 → -er."},
+        {q:"She is the ___ student in our class.", options:["smart","smarter","smartest","most smart"], answer:2, explain:"최상급 → -est."},
+        {q:"This question is ___ than the last one.", options:["difficult","difficulter","more difficult","most difficult"], answer:2, explain:"긴 형용사 → more."},
+        {q:"He runs as ___ as his brother.", options:["fast","faster","fastest","more fast"], answer:0, explain:"동등 비교 → as + 원급 + as."},
+        {q:"This is the ___ movie I have ever seen.", options:["good","better","best","more good"], answer:2, explain:"최상급(불규칙) → best."},
+        {q:"Traffic is ___ in the morning than at night.", options:["bad","worse","worst","more bad"], answer:1, explain:"비교급(불규칙) → worse."},
+        {q:"She is ___ intelligent than her colleagues.", options:["more","most","much","very"], answer:0, explain:"긴 형용사 비교급 → more."},
+        {q:"The more you practice, ___ you become.", options:["good","better","best","the better"], answer:3, explain:"the 비교급, the 비교급 구문."},
+        {q:"This is one of the ___ cities in Asia.", options:["large","larger","largest","most large"], answer:2, explain:"최상급 → -est."},
+        {q:"He is not as ___ as he used to be.", options:["strong","stronger","strongest","more strong"], answer:0, explain:"동등 비교(부정) → as + 원급 + as."}
       ]}
   ],
   B1:[
-    {title:"조건문 (1st & 2nd Conditional)", explain:"1형식(현실적 미래): If + 현재, will + 동사원형. 2형식(가정/비현실): If + 과거, would + 동사원형.",
+    {title:"조건문 (1st & 2nd Conditional)", pte:true,
+      explain:"1형식(현실적 미래): If + 현재, will + 동사원형. 2형식(가정/비현실): If + 과거, would + 동사원형.",
       qs:[
         {q:"If it rains tomorrow, we ___ the picnic.", options:["cancel","will cancel","would cancel","cancelled"], answer:1, explain:"1형식: If+현재, will+동사원형."},
         {q:"If I ___ more time, I would travel more.", options:["have","had","will have","having"], answer:1, explain:"2형식: If+과거."},
         {q:"If she studies hard, she ___ the exam.", options:["would pass","will pass","passed","pass"], answer:1, explain:"현실적 미래 → will."},
         {q:"If I were you, I ___ apologize.", options:["will","would","am","was"], answer:1, explain:"2형식 조건문의 주절 → would."},
-        {q:"We will be late if we ___ now.", options:["don't leave","won't leave","didn't leave","not leave"], answer:0, explain:"조건절엔 현재시제 사용."}
+        {q:"We will be late if we ___ now.", options:["don't leave","won't leave","didn't leave","not leave"], answer:0, explain:"조건절엔 현재시제 사용."},
+        {q:"If he ___ harder, he would get promoted.", options:["works","worked","will work","working"], answer:1, explain:"2형식: If+과거."},
+        {q:"She won't come if you ___ her.", options:["don't invite","won't invite","didn't invite","not invite"], answer:0, explain:"조건절엔 현재시제 사용."},
+        {q:"If they ___ the bus, they will be on time.", options:["catch","caught","will catch","catching"], answer:0, explain:"1형식: If+현재."},
+        {q:"If I had a car, I ___ to work every day.", options:["will drive","would drive","drove","drive"], answer:1, explain:"2형식 주절 → would."},
+        {q:"If you heat ice, it ___.", options:["melts","will melt","melted","would melt"], answer:0, explain:"일반적 사실(zero conditional) → 현재시제."}
       ]},
-    {title:"수동태 기초", explain:"행위의 대상이 중요할 때 be + p.p. 형태로 씁니다. 시제에 따라 be동사만 바뀝니다 (is made, was made, has been made).",
+    {title:"수동태 기초", pte:true,
+      explain:"행위의 대상이 중요할 때 be + p.p. 형태로 씁니다. 시제에 따라 be동사만 바뀝니다 (is made, was made, has been made).",
       qs:[
         {q:"The report ___ by the finance team every month.", options:["prepares","is prepared","prepared","preparing"], answer:1, explain:"반복적 사실 + 수동 → is prepared."},
         {q:"The bridge ___ in 1998.", options:["built","was built","builds","is building"], answer:1, explain:"과거 시점의 수동 → was built."},
         {q:"New guidelines ___ next week.", options:["will announce","will be announced","announce","are announcing"], answer:1, explain:"미래 수동 → will be announced."},
         {q:"The results ___ carefully before publication.", options:["review","are reviewed","reviewing","reviews"], answer:1, explain:"현재시제 수동 → are reviewed."},
-        {q:"This model ___ widely since its release.", options:["has used","has been used","used","uses"], answer:1, explain:"현재완료 수동 → has been used."}
+        {q:"This model ___ widely since its release.", options:["has used","has been used","used","uses"], answer:1, explain:"현재완료 수동 → has been used."},
+        {q:"The letter ___ yesterday.", options:["was sent","sent","is sending","sends"], answer:0, explain:"과거 수동 → was sent."},
+        {q:"These cars ___ in Germany.", options:["make","are made","made","is made"], answer:1, explain:"일반적 사실 수동, 복수 주어 → are made."},
+        {q:"The problem ___ by tomorrow.", options:["will solve","will be solved","solved","solves"], answer:1, explain:"미래 수동 → will be solved."},
+        {q:"The building ___ right now.", options:["is renovating","is being renovated","renovates","renovated"], answer:1, explain:"현재진행 수동 → is being renovated."},
+        {q:"Her novel ___ into five languages so far.", options:["has translated","has been translated","translated","translates"], answer:1, explain:"현재완료 수동 → has been translated."}
+      ]},
+    {title:"관계대명사 기초 (who/which/that/whose)", pte:true,
+      explain:"사람 선행사엔 who, 사물엔 which, 둘 다 가능한 that, 소유격엔 whose를 씁니다. 관계대명사는 뒤에 오는 절에서 주어나 목적어 역할을 합니다.",
+      qs:[
+        {q:"The man ___ called you is my uncle.", options:["which","who","whose","whom"], answer:1, explain:"사람 선행사 + 주격 → who."},
+        {q:"This is the book ___ I told you about.", options:["who","whose","which","whom"], answer:2, explain:"사물 선행사 → which."},
+        {q:"The woman ___ car was stolen reported it to the police.", options:["who","whose","which","that"], answer:1, explain:"소유 관계 → whose."},
+        {q:"I know a shop ___ sells fresh bread every morning.", options:["who","whose","that","whom"], answer:2, explain:"사물 선행사(shop) + 주격 → that (또는 which)."},
+        {q:"The students ___ passed the test celebrated together.", options:["which","who","whose","whom"], answer:1, explain:"사람 선행사 + 주격 → who."},
+        {q:"This is the house ___ roof was damaged in the storm.", options:["that","which","whose","who"], answer:2, explain:"소유 관계 → whose."},
+        {q:"The movie ___ we watched last night was great.", options:["who","which","whose","whom"], answer:1, explain:"사물 선행사 + 목적격 → which."},
+        {q:"She is the doctor ___ treated my father.", options:["which","who","whose","whom"], answer:1, explain:"사람 선행사 + 주격 → who."},
+        {q:"I need a phone ___ battery lasts longer.", options:["who","which","whose","whom"], answer:2, explain:"소유 관계(사물) → whose."},
+        {q:"The company ___ products are eco-friendly won an award.", options:["which","who","whose","that"], answer:2, explain:"소유 관계 → whose."}
+      ]},
+    {title:"부가의문문 & 간접의문문", pte:false,
+      explain:"부가의문문은 앞 문장이 긍정이면 부정, 부정이면 긍정으로 짧게 되묻습니다. 간접의문문은 다른 문장 안에 들어갈 때 '의문사+주어+동사' 어순을 유지합니다.",
+      qs:[
+        {q:"You like coffee, ___?", options:["do you","don't you","aren't you","didn't you"], answer:1, explain:"긍정문 → 부정 부가의문문."},
+        {q:"She isn't coming, ___?", options:["is she","isn't she","does she","doesn't she"], answer:0, explain:"부정문 → 긍정 부가의문문."},
+        {q:"Can you tell me ___?", options:["where is the station","where the station is","where does the station","the station where is"], answer:1, explain:"간접의문문 어순: 의문사+주어+동사."},
+        {q:"They finished the project, ___?", options:["did they","didn't they","do they","don't they"], answer:1, explain:"긍정문 → 부정 부가의문문."},
+        {q:"Do you know ___?", options:["what time is it","what time it is","it is what time","what is time"], answer:1, explain:"간접의문문 어순."},
+        {q:"He hasn't called yet, ___?", options:["hasn't he","has he","doesn't he","does he"], answer:1, explain:"부정문 → 긍정 부가의문문."},
+        {q:"I wonder ___.", options:["why did she leave","why she left","she left why","why leave she did"], answer:1, explain:"간접의문문 어순."},
+        {q:"Let's go now, ___?", options:["shall we","will we","don't we","won't we"], answer:0, explain:"Let's 제안문의 부가의문문 → shall we."},
+        {q:"Could you explain ___?", options:["how does it work","how it works","it works how","how work it does"], answer:1, explain:"간접의문문 어순."},
+        {q:"There isn't any milk left, ___?", options:["isn't there","is there","doesn't it","does it"], answer:1, explain:"there is 부정문 → 긍정 부가의문문(is there)."}
+      ]},
+    {title:"현재완료진행형 vs 현재완료", pte:false,
+      explain:"현재완료(have p.p.)는 '완료된 결과'를, 현재완료진행(have been -ing)은 '최근까지 계속되어 온 동작 자체'를 강조합니다.",
+      qs:[
+        {q:"I ___ this book — it was great.", options:["have read","have been reading","read","am reading"], answer:0, explain:"완료된 결과(다 읽음) → have read."},
+        {q:"She ___ for two hours and she's exhausted.", options:["has studied","has been studying","studied","studies"], answer:1, explain:"계속된 동작 강조 → has been studying."},
+        {q:"How many emails ___ so far today?", options:["have you sent","have you been sending","did you send","do you send"], answer:0, explain:"완료된 개수(결과) → have you sent."},
+        {q:"It ___ all morning; the streets are flooded.", options:["has rained","has been raining","rained","rains"], answer:1, explain:"계속된 동작 강조 → has been raining."},
+        {q:"He ___ three novels this year.", options:["has written","has been writing","wrote","writes"], answer:0, explain:"완료된 결과(개수) → has written."},
+        {q:"They ___ for the bus for twenty minutes.", options:["have waited","have been waiting","waited","wait"], answer:1, explain:"계속된 동작 강조 → have been waiting."},
+        {q:"She ___ her homework already.", options:["has finished","has been finishing","finished","finishes"], answer:0, explain:"완료된 결과 → has finished."},
+        {q:"We ___ this issue for weeks without a solution.", options:["have discussed","have been discussing","discussed","discuss"], answer:1, explain:"계속된 동작 강조 → have been discussing."},
+        {q:"I ___ all the boxes — the room is empty now.", options:["have moved","have been moving","moved","move"], answer:0, explain:"완료된 결과 → have moved."},
+        {q:"He ___ to lose weight for months.", options:["has tried","has been trying","tried","tries"], answer:1, explain:"계속된 노력 강조 → has been trying."}
       ]}
   ],
   B2:[
-    {title:"간접화법 (Reported Speech)", explain:"직접화법을 간접화법으로 바꿀 때 시제를 한 단계 과거로 이동시킵니다 (present→past, will→would 등).",
+    {title:"간접화법 (Reported Speech)", pte:true,
+      explain:"직접화법을 간접화법으로 바꿀 때 시제를 한 단계 과거로 이동시킵니다 (present→past, will→would 등).",
       qs:[
         {q:"She said, \"I am tired.\" → She said (that) she ___ tired.", options:["is","was","has been","be"], answer:1, explain:"현재 → 과거로 이동."},
         {q:"He said, \"I will call you.\" → He said (that) he ___ call me.", options:["will","would","can","was"], answer:1, explain:"will → would."},
         {q:"They said, \"We have finished.\" → They said (that) they ___ finished.", options:["have","had","has","were"], answer:1, explain:"현재완료 → 과거완료."},
         {q:"\"I can help,\" she said. → She said (that) she ___ help.", options:["can","could","will","would"], answer:1, explain:"can → could."},
-        {q:"\"I saw him yesterday,\" he said. → He said (that) he ___ him the day before.", options:["saw","had seen","sees","has seen"], answer:1, explain:"과거 → 과거완료."}
+        {q:"\"I saw him yesterday,\" he said. → He said (that) he ___ him the day before.", options:["saw","had seen","sees","has seen"], answer:1, explain:"과거 → 과거완료."},
+        {q:"\"I am studying,\" she said. → She said (that) she ___ studying.", options:["is","was","has been","be"], answer:1, explain:"현재진행 → 과거진행."},
+        {q:"\"I must leave now,\" he said. → He said (that) he ___ leave then.", options:["must","had to","will have to","should"], answer:1, explain:"must → had to (의무 이동)."},
+        {q:"\"We are going to visit Paris,\" they said. → They said (that) they ___ going to visit Paris.", options:["are","were","have been","be"], answer:1, explain:"현재 → 과거로 이동."},
+        {q:"\"She has already left,\" he told me. → He told me (that) she ___ already left.", options:["has","had","have","was"], answer:1, explain:"현재완료 → 과거완료."},
+        {q:"\"I don't like it,\" she said. → She said (that) she ___ like it.", options:["doesn't","didn't","hasn't","won't"], answer:1, explain:"현재부정 → 과거부정으로 이동."}
       ]},
-    {title:"관계대명사절", explain:"who/which/that는 선행사를 수식하는 절을 이끕니다. 콤마가 있는 계속적 용법에는 that을 쓸 수 없습니다.",
+    {title:"관계대명사절 (계속적 용법)", pte:true,
+      explain:"who/which/that는 선행사를 수식하는 절을 이끕니다. 콤마가 있는 계속적 용법에는 that을 쓸 수 없습니다.",
       qs:[
         {q:"The scientist ___ discovered the vaccine won an award.", options:["which","who","whose","when"], answer:1, explain:"사람 선행사 → who."},
         {q:"This is the report ___ I mentioned earlier.", options:["who","whose","which","where"], answer:2, explain:"사물 선행사 → which."},
         {q:"The company, ___ profits doubled last year, is expanding.", options:["that","which","whose","who"], answer:2, explain:"소유 관계 → whose."},
         {q:"Paris, ___ is the capital of France, attracts many tourists.", options:["that","which","who","whose"], answer:1, explain:"계속적 용법(콤마) → that 불가, which 사용."},
-        {q:"The reason ___ she left is still unclear.", options:["why","which","who","whose"], answer:0, explain:"이유를 나타내는 선행사 → why."}
+        {q:"The reason ___ she left is still unclear.", options:["why","which","who","whose"], answer:0, explain:"이유를 나타내는 선행사 → why."},
+        {q:"My grandfather, ___ is 90 years old, still walks every day.", options:["that","who","which","whose"], answer:1, explain:"계속적 용법(콤마, 사람) → who."},
+        {q:"The hotel, ___ was built in 1920, has just been renovated.", options:["that","which","who","whose"], answer:1, explain:"계속적 용법(콤마, 사물) → which."},
+        {q:"This report, ___ conclusions surprised everyone, was published today.", options:["that","which","whose","who"], answer:2, explain:"소유 관계 → whose."},
+        {q:"The CEO, ___ decisions affect thousands of employees, announced her resignation.", options:["that","who","whose","which"], answer:2, explain:"소유 관계(사람) → whose."},
+        {q:"The novel, ___ I read last summer, became a bestseller.", options:["that","which","who","whose"], answer:1, explain:"계속적 용법(콤마, 사물) → which."}
+      ]},
+    {title:"분사구문 (Participial Phrases)", pte:true,
+      explain:"부사절의 접속사와 주어를 생략하고 동사를 분사(-ing/p.p.)로 바꿔 문장을 간결하게 만드는 구문입니다. 능동 의미면 현재분사, 수동 의미면 과거분사를 씁니다.",
+      qs:[
+        {q:"___ tired, she went to bed early.", options:["Feel","Feeling","Felt","To feel"], answer:1, explain:"능동 의미(그녀가 느낌) → 현재분사."},
+        {q:"___ in a hurry, he forgot his keys.", options:["Being","Been","To be","Be"], answer:0, explain:"능동 의미 → Being."},
+        {q:"___ by the noise, the baby began to cry.", options:["Waking","Waken","Woken","Wake"], answer:2, explain:"수동 의미(아기가 깨워짐) → 과거분사(Woken)."},
+        {q:"___ all the data, we started the analysis.", options:["Collect","Collecting","Collected","To collect"], answer:1, explain:"능동 의미(우리가 수집함) → Collecting."},
+        {q:"___ from a wealthy family, she never had to worry about money.", options:["Come","Coming","Come from","Having come"], answer:1, explain:"능동 의미 → Coming."},
+        {q:"Not ___ what to do, he called his manager.", options:["knowing","known","know","to know"], answer:0, explain:"능동 의미 부정 → Not knowing."},
+        {q:"___ with the results, the team celebrated.", options:["Satisfy","Satisfying","Satisfied","To satisfy"], answer:2, explain:"수동 의미(팀이 만족됨) → Satisfied."},
+        {q:"___ the letter twice, she still didn't understand it.", options:["Read","Reading","Having read","Readen"], answer:2, explain:"완료 분사구문(먼저 일어난 일 강조) → Having read."},
+        {q:"___ in traffic, he arrived late for the meeting.", options:["Stuck","Sticking","To stick","Stick"], answer:0, explain:"수동 의미(갇힘) → Stuck."},
+        {q:"___ no reply, she sent another email.", options:["Receive","Receiving","Received","To receive"], answer:1, explain:"능동 의미(그녀가 받지 못함) → Receiving."}
+      ]},
+    {title:"강조구문 (It is ~ that)", pte:false,
+      explain:"It is/was + 강조하고 싶은 요소 + that(사람일 경우 who도 가능) + 나머지로 특정 성분을 강조합니다.",
+      qs:[
+        {q:"It was John ___ broke the window.", options:["that","what","which","whom"], answer:0, explain:"사람 강조 → that (who도 가능하나 that이 기본형)."},
+        {q:"It is ___ money that matters most to him.", options:["what","that","which","who"], answer:1, explain:"It is + 명사 + that 구조."},
+        {q:"It was in 2015 ___ they first met.", options:["who","which","that","what"], answer:2, explain:"시간 강조 → that."},
+        {q:"It is her honesty ___ people admire.", options:["who","that","what","whom"], answer:1, explain:"사물(추상명사) 강조 → that."},
+        {q:"It was at the airport ___ I lost my passport.", options:["who","that","what","which"], answer:1, explain:"장소 강조 → that."},
+        {q:"It is the manager ___ makes the final decision.", options:["that","what","whom","-"], answer:0, explain:"사람 강조 → that (또는 who)."},
+        {q:"It was not until midnight ___ they finished the project.", options:["who","that","what","which"], answer:1, explain:"시간 강조 도치형 → that."},
+        {q:"It was because of the rain ___ the game was cancelled.", options:["who","which","that","what"], answer:2, explain:"이유 강조 → that."},
+        {q:"It is this very book ___ changed my life.", options:["who","that","what","whose"], answer:1, explain:"사물 강조 → that."},
+        {q:"It was she ___ suggested the idea first.", options:["that","what","whose","-"], answer:0, explain:"사람 강조 → that (또는 who)."}
+      ]},
+    {title:"사역동사 & 지각동사", pte:false,
+      explain:"make/have/let(사역동사)은 목적어 뒤에 동사원형을, get은 to부정사를 씁니다. see/watch/hear(지각동사)는 목적어 뒤에 동사원형(전체) 또는 -ing(진행 중 일부)를 씁니다.",
+      qs:[
+        {q:"She made him ___ the truth.", options:["tell","to tell","telling","told"], answer:0, explain:"사역동사 make + 목적어 + 동사원형."},
+        {q:"I had my car ___ yesterday.", options:["repair","to repair","repaired","repairing"], answer:2, explain:"수동 의미(차가 수리됨) → have + 목적어 + p.p."},
+        {q:"They let the children ___ outside.", options:["play","to play","played","playing"], answer:0, explain:"사역동사 let + 목적어 + 동사원형."},
+        {q:"She got her brother ___ her with the move.", options:["help","to help","helping","helped"], answer:1, explain:"get + 목적어 + to부정사."},
+        {q:"I saw him ___ across the street.", options:["run","to run","ran","runs"], answer:0, explain:"지각동사 + 목적어 + 동사원형(전체 동작)."},
+        {q:"We watched the sun ___ slowly over the hills.", options:["set","to set","setting","sets"], answer:2, explain:"지각동사 + 목적어 + -ing(진행 중인 동작 강조)."},
+        {q:"He had his passport ___ before the trip.", options:["renew","to renew","renewed","renewing"], answer:2, explain:"수동 의미(여권이 갱신됨) → p.p."},
+        {q:"I heard someone ___ my name.", options:["call","to call","called","calling"], answer:0, explain:"지각동사 + 목적어 + 동사원형(전체 동작)."},
+        {q:"The teacher made the students ___ the essay again.", options:["rewrite","to rewrite","rewriting","rewrote"], answer:0, explain:"사역동사 make + 동사원형."},
+        {q:"She felt the ground ___ beneath her feet.", options:["shake","to shake","shaking","shook"], answer:2, explain:"지각동사 + -ing(진행 중인 동작 느낌 강조)."}
       ]}
   ],
   C1:[
-    {title:"도치구문 (Inversion)", explain:"부정어(Never, Rarely, Not only 등)가 문장 앞에 오면 주어-동사가 도치됩니다. 격식체 글쓰기에서 강조 효과를 냅니다.",
+    {title:"도치구문 (Inversion)", pte:true,
+      explain:"부정어(Never, Rarely, Not only 등)가 문장 앞에 오면 주어-동사가 도치됩니다. 격식체 글쓰기에서 강조 효과를 냅니다.",
       qs:[
         {q:"Never ___ such a rapid change in the market.", options:["we have seen","have we seen","we saw","did we saw"], answer:1, explain:"Never로 시작 → 조동사-주어 도치."},
         {q:"Not only ___ late, but he also forgot the documents.", options:["he was","was he","he is","is he"], answer:1, explain:"Not only 도치 → was he."},
         {q:"Rarely ___ such dedication among new employees.", options:["we witness","do we witness","we witnessed","did we witnessed"], answer:1, explain:"Rarely 도치 → do we witness."},
         {q:"Under no circumstances ___ the door be left unlocked.", options:["should","we should","it should","the door should"], answer:0, explain:"Under no circumstances 도치 → should + 주어."},
-        {q:"Only after the meeting ___ the real issue.", options:["we understood","did we understand","we did understand","understood we"], answer:1, explain:"Only after 도치 → did we understand."}
+        {q:"Only after the meeting ___ the real issue.", options:["we understood","did we understand","we did understand","understood we"], answer:1, explain:"Only after 도치 → did we understand."},
+        {q:"Little ___ that the decision would change everything.", options:["she knew","did she know","she did know","knew she"], answer:1, explain:"Little 도치 → did she know."},
+        {q:"No sooner ___ than it started to rain.", options:["we had left","had we left","we left","did we left"], answer:1, explain:"No sooner 도치(had+주어)."},
+        {q:"So exhausted ___ that she fell asleep instantly.", options:["was she","she was","did she","she did"], answer:0, explain:"So + 형용사 도치 → was she."},
+        {q:"Seldom ___ a more compelling argument.", options:["I have heard","have I heard","I heard","did I heard"], answer:1, explain:"Seldom 도치 → have I heard."},
+        {q:"Only by working together ___ solve this crisis.", options:["we can","can we","we could","could we"], answer:1, explain:"Only by ~ 도치 → can we."}
       ]},
-    {title:"가정법 &amp; 혼합 조건문", explain:"과거 사실의 반대는 3형식(If + had p.p., would have p.p.), 과거 원인이 현재 결과에 영향을 줄 땐 혼합 조건문(If + had p.p., would + 동사원형)을 씁니다.",
+    {title:"가정법 & 혼합 조건문", pte:true,
+      explain:"과거 사실의 반대는 3형식(If + had p.p., would have p.p.), 과거 원인이 현재 결과에 영향을 줄 땐 혼합 조건문(If + had p.p., would + 동사원형)을 씁니다.",
       qs:[
         {q:"If she had studied harder, she ___ the exam.", options:["would pass","would have passed","passed","will pass"], answer:1, explain:"3형식: would have p.p."},
         {q:"If I had taken that job, I ___ in Seoul now.", options:["would live","would have lived","lived","live"], answer:0, explain:"혼합 조건문: 과거 원인→현재 결과, would+동사원형."},
         {q:"Had they left earlier, they ___ the flight.", options:["would catch","would have caught","caught","catch"], answer:1, explain:"If 생략 도치형 3형식."},
         {q:"I wish I ___ more time to prepare.", options:["have","had","had had","would have"], answer:2, explain:"과거 사실에 대한 아쉬움 → had had (had + p.p.)."},
-        {q:"If he weren't so busy, he ___ join us tonight.", options:["would","will","would have","had"], answer:0, explain:"2형식 가정법의 주절 → would + 동사원형."}
+        {q:"If he weren't so busy, he ___ join us tonight.", options:["would","will","would have","had"], answer:0, explain:"2형식 가정법의 주절 → would + 동사원형."},
+        {q:"If I hadn't missed the bus, I ___ late for work today.", options:["wouldn't be","wouldn't have been","weren't","hadn't been"], answer:0, explain:"혼합 조건문: 과거 원인 → 현재 결과."},
+        {q:"She wishes she ___ that email before sending it.", options:["checked","had checked","checks","would check"], answer:1, explain:"과거 사실에 대한 아쉬움 → had checked."},
+        {q:"It's time we ___ this problem seriously.", options:["address","addressed","had addressed","will address"], answer:1, explain:"It's time + 가정법 과거 → addressed."},
+        {q:"If only he ___ me the truth from the start.", options:["told","had told","tells","would tell"], answer:1, explain:"If only + 과거완료(과거 사실 아쉬움)."},
+        {q:"Were it not for her help, the project ___.", options:["would fail","would have failed","failed","fails"], answer:1, explain:"가정법 도치(Were it not for) + 과거 결과 → would have failed."}
+      ]},
+    {title:"생략구문 (Ellipsis)", pte:false,
+      explain:"반복되는 어구를 생략해 문장을 간결하게 만드는 구문입니다. 등위접속사·비교구문·so/neither 응답에서 자주 쓰입니다.",
+      qs:[
+        {q:"She can speak French, and he ___ too.", options:["can","can speak","does","is"], answer:0, explain:"반복 동사구 생략 → can (speak French 생략)."},
+        {q:"I haven't finished the report, and neither ___ my colleague.", options:["has","have","did","does"], answer:0, explain:"neither + 조동사 도치 → has."},
+        {q:"He plays tennis better than she ___.", options:["does","plays","is","does play"], answer:0, explain:"반복 동사 대신 do동사 사용 → does."},
+        {q:"A: I'm exhausted. B: So ___ I.", options:["am","do","was","have"], answer:0, explain:"긍정 동의(so + 도치) → am (be동사 반복)."},
+        {q:"Some students passed the test; others ___.", options:["didn't","weren't","don't","hadn't"], answer:0, explain:"반복 동사구 생략 → didn't (pass the test 생략)."},
+        {q:"She wanted to leave early, but he didn't ___.", options:["want to","want","wants to","wanted"], answer:0, explain:"to부정사 남기고 동사 생략 → want to."},
+        {q:"If you can't attend, I can't ___.", options:["either","too","neither","also"], answer:0, explain:"부정문 동의 → either."},
+        {q:"He said he would call, but he never ___.", options:["did","called","does","has"], answer:0, explain:"과거시제 대동사 → did (called 생략)."},
+        {q:"Not everyone agreed, but most ___.", options:["did","agreed","do","were"], answer:0, explain:"반복 동사 생략 → did."},
+        {q:"I'd like to help, but I'm not sure I can ___.", options:["-","help","to help","do"], answer:0, explain:"to부정사/목적어 전체 생략 가능 (can 뒤에 생략)."}
+      ]},
+    {title:"양보구문 (No matter / However)", pte:false,
+      explain:"no matter how/what/who와 however는 '~에도 불구하고'라는 양보의 의미를 나타내며, however 뒤에는 형용사/부사가 바로 옵니다.",
+      qs:[
+        {q:"___ hard he tries, he can't seem to finish on time.", options:["No matter","However","Whatever","Whoever"], answer:1, explain:"However + 형용사/부사 (hard) 구조."},
+        {q:"No matter ___ happens, we will support you.", options:["how","what","however","whatever"], answer:1, explain:"No matter + 의문사(what)."},
+        {q:"___ difficult the task is, she never gives up.", options:["No matter how","However","No matter what","Whatever"], answer:1, explain:"However + 형용사 구조."},
+        {q:"Whoever ___ first will get the prize.", options:["arrive","arrives","arriving","arrived"], answer:1, explain:"복합관계대명사절의 동사는 단수 취급 → arrives."},
+        {q:"Whatever ___ decide, I will support you.", options:["you","do you","you do","did you"], answer:0, explain:"복합관계대명사절 어순: 주어+동사 → you decide."},
+        {q:"No matter how much money he ___, he never feels satisfied.", options:["earns","earn","earning","earned"], answer:0, explain:"no matter how + 절, 현재시제 → earns."},
+        {q:"___ you go, you will find good coffee in this city.", options:["Wherever","However","Whichever","Whoever"], answer:0, explain:"장소의 복합관계부사 → Wherever."},
+        {q:"However tired ___, she always helps her neighbors.", options:["she is","is she","she was","was she"], answer:0, explain:"However + 형용사 + 주어 + 동사 (도치 없음)."},
+        {q:"Whichever option ___ choose, make sure it's reversible.", options:["you","do you","you do","did you"], answer:0, explain:"복합관계형용사절 어순 → you choose."},
+        {q:"No matter how many times I explain it, he ___ understand.", options:["never","doesn't never","not","no"], answer:0, explain:"부정부사 위치 → never."}
+      ]},
+    {title:"복합관계사 (Whoever / Whatever / Whichever)", pte:false,
+      explain:"복합관계대명사(whoever, whatever, whichever)는 '~하는 사람은 누구든지 / ~하는 것은 무엇이든지'라는 뜻으로 명사절 또는 양보 부사절을 이끕니다.",
+      qs:[
+        {q:"___ wins the competition will receive a scholarship.", options:["Whoever","Whatever","Whichever","Whom"], answer:0, explain:"명사절 주어(사람) → Whoever."},
+        {q:"You can choose ___ dessert you like.", options:["whoever","whatever","however","whom"], answer:1, explain:"명사절 목적어(사물) → whatever."},
+        {q:"___ path you take, stay focused on the goal.", options:["Whoever","Whatever","Whichever","Whom"], answer:2, explain:"선택지 중 하나(둘 이상 중 선택) → Whichever."},
+        {q:"Please give this message to ___ answers the phone.", options:["whoever","whatever","however","whom"], answer:0, explain:"전치사의 목적어절 주어(사람) → whoever."},
+        {q:"She will accept ___ salary they offer.", options:["whoever","whatever","however","whichever"], answer:1, explain:"명사절(제안되는 것은 무엇이든) → whatever."},
+        {q:"___ happens next, we must stay calm.", options:["Whoever","Whatever","Whichever","Whom"], answer:1, explain:"양보 부사절(무슨 일이 일어나든) → Whatever."},
+        {q:"Take ___ seat is available.", options:["whoever","whatever","whichever","whom"], answer:2, explain:"제한된 선택지 중 하나 → whichever."},
+        {q:"___ told you that was mistaken.", options:["Whoever","Whatever","Whichever","Whom"], answer:0, explain:"명사절 주어(그렇게 말한 사람이 누구든) → Whoever."},
+        {q:"I'll support ___ decision the committee makes.", options:["whoever","whatever","however","whichever"], answer:1, explain:"명사절 한정(어떤 결정이든) → whatever."},
+        {q:"You may sit in ___ chair you prefer.", options:["whoever","whatever","however","whichever"], answer:3, explain:"선택지 중 하나 강조 → whichever."}
       ]}
   ]
 };
@@ -2212,18 +2542,38 @@ function buildVocabQuiz(host, words, level, onGraded){
    GRAMMAR VIEW
    ============================================================ */
 function renderGrammarView(){
-  const tabHost=document.getElementById('gramTabs'), host=document.getElementById('gramHost');
-  const recommendedIdx = store.diagnosticDone ? LEVELS.indexOf(store.level) : -1;
-  buildTabs(tabHost, host, LEVELS.map((l,i)=>({label:l+(i===recommendedIdx?' (내 레벨)':''), key:l})), (tab,el)=>{
-    GRAMMAR[tab.key].forEach(topic=>{
-      const card=document.createElement('div'); card.className='card'; card.style.marginBottom='16px';
-      card.innerHTML = `<h3 style="font-size:15.5px;">${topic.title}</h3><p style="font-size:13.5px; color:var(--ink-700);">${topic.explain}</p>`;
-      const qHost=document.createElement('div');
-      topic.qs.forEach((q,i)=> renderMCQ(qHost, q, i, (ok)=>{ if(ok) bump('grammar'); else bump('grammar'); }));
-      card.appendChild(qHost);
-      el.appendChild(card);
-    });
-  }, recommendedIdx);
+  const modeTabHost=document.getElementById('gramModeTabs'), modeHost=document.getElementById('gramModeHost');
+  const modes=[{label:'문법 개념 총정리',key:'concepts'},{label:'레벨별 연습 문제',key:'practice'}];
+  buildTabs(modeTabHost, modeHost, modes, (mode, el)=>{
+    if(mode.key==='concepts'){
+      GRAMMAR_CONCEPTS.forEach(cat=>{
+        const catEl=document.createElement('div'); catEl.className='concept-cat';
+        const h=document.createElement('h3'); h.textContent=cat.cat; catEl.appendChild(h);
+        cat.items.forEach(it=>{
+          const item=document.createElement('div'); item.className='concept-item'+(it.pte?' pte':'');
+          item.innerHTML = `<div class="ctitle">${it.title}${it.pte?' <span class="pill pte">PTE 빈출</span>':''}</div><div class="cbody">${it.body}</div>`;
+          catEl.appendChild(item);
+        });
+        el.appendChild(catEl);
+      });
+      return;
+    }
+    // practice mode: level tabs, then topics with 10-question sets
+    const tabHost=document.createElement('div'); tabHost.className='tabs';
+    const host=document.createElement('div');
+    el.appendChild(tabHost); el.appendChild(host);
+    const recommendedIdx = store.diagnosticDone ? LEVELS.indexOf(store.level) : -1;
+    buildTabs(tabHost, host, LEVELS.map((l,i)=>({label:l+(i===recommendedIdx?' (내 레벨)':''), key:l})), (tab,levelEl)=>{
+      GRAMMAR[tab.key].forEach(topic=>{
+        const card=document.createElement('div'); card.className='card'; card.style.marginBottom='16px';
+        card.innerHTML = `<h3 style="font-size:15.5px; display:flex; align-items:center; gap:8px;">${topic.title}${topic.pte?' <span class=\"pill pte\">PTE 빈출</span>':''}</h3><p style="font-size:13.5px; color:var(--ink-700);">${topic.explain}</p>`;
+        const qHost=document.createElement('div');
+        topic.qs.forEach((q,i)=> renderMCQ(qHost, q, i, (ok)=>{ if(ok) bump('grammar'); else bump('grammar'); }));
+        card.appendChild(qHost);
+        levelEl.appendChild(card);
+      });
+    }, recommendedIdx);
+  });
 }
 
 /* ============================================================
@@ -2846,3 +3196,5 @@ initApp();
 
 })();
 </script>
+</body>
+</html>
