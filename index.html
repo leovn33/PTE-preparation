@@ -1,0 +1,1835 @@
+<title>PTE Compass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --paper:#f6f2e9;
+    --paper-raised:#ffffff;
+    --ink-900:#1c2b3a;
+    --ink-700:#3d5164;
+    --ink-500:#63758a;
+    --line:#ddd5c2;
+    --line-soft:#e8e2d3;
+    --brass:#a56b2b;
+    --brass-soft:#f1e2c8;
+    --teal:#2f6f6b;
+    --teal-soft:#dcece9;
+    --good:#3f7d5c;
+    --good-soft:#e0efe4;
+    --danger:#a8442d;
+    --danger-soft:#f6e1da;
+    --shadow: 0 1px 2px rgba(28,43,58,.06), 0 8px 24px -12px rgba(28,43,58,.18);
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#141a22;
+      --paper-raised:#1b232d;
+      --ink-900:#eee7d8;
+      --ink-700:#c5bfae;
+      --ink-500:#93a0ac;
+      --line:#31394304;
+      --line:#333e49;
+      --line-soft:#2a323c;
+      --brass:#d9a25c;
+      --brass-soft:#3a2e1c;
+      --teal:#6cbdb6;
+      --teal-soft:#173330;
+      --good:#7fc79b;
+      --good-soft:#173626;
+      --danger:#e08a72;
+      --danger-soft:#3a2119;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#141a22;
+    --paper-raised:#1b232d;
+    --ink-900:#eee7d8;
+    --ink-700:#c5bfae;
+    --ink-500:#93a0ac;
+    --line:#333e49;
+    --line-soft:#2a323c;
+    --brass:#d9a25c;
+    --brass-soft:#3a2e1c;
+    --teal:#6cbdb6;
+    --teal-soft:#173330;
+    --good:#7fc79b;
+    --good-soft:#173626;
+    --danger:#e08a72;
+    --danger-soft:#3a2119;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink-900);
+    font-family:'Public Sans','Noto Sans KR',sans-serif;
+    font-size:15px; line-height:1.6;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces','Noto Sans KR',serif;
+    text-wrap:balance; font-weight:600; margin:0 0 .3em;
+    letter-spacing:-.01em;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums;}
+  a{color:var(--teal);}
+  button{font-family:inherit;}
+  ::selection{background:var(--brass-soft);}
+
+  .app{display:grid; grid-template-columns:230px 1fr; min-height:100vh;}
+  .app > *{min-width:0;} /* grid items default to min-width:auto, which lets long text force horizontal overflow on narrow screens */
+  @media (max-width:840px){ .app{grid-template-columns:1fr;} }
+  .grid > *{min-width:0;}
+
+  /* Sidebar */
+  .sidebar{
+    background:var(--paper-raised); border-right:1px solid var(--line);
+    padding:22px 16px; display:flex; flex-direction:column; gap:18px;
+  }
+  @media (max-width:840px){
+    /* A full nav+vocab-height sidebar is too tall to pin at the top of a phone screen —
+       sticky here would float over (and swallow taps meant for) the content below it. */
+    .sidebar{border-right:none; border-bottom:1px solid var(--line);}
+  }
+  .brand{display:flex; align-items:baseline; gap:8px; padding:0 4px;}
+  .brand .mark{
+    width:30px;height:30px;border-radius:8px;background:var(--ink-900);color:var(--paper);
+    display:inline-flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;
+    font-weight:600; font-size:15px; flex:none;
+  }
+  .brand-name{font-family:'Fraunces',serif; font-weight:600; font-size:17px;}
+  .brand-sub{font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-500);}
+
+  nav.navlist{display:flex; flex-direction:column; gap:2px;}
+  .navgroup-label{
+    font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-500);
+    margin:14px 8px 4px;
+  }
+  .navgroup-label:first-child{margin-top:2px;}
+  .navitem{
+    display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:9px;
+    color:var(--ink-700); text-decoration:none; cursor:pointer; font-size:13.5px; font-weight:500;
+    border:1px solid transparent; background:none; text-align:left; width:100%;
+  }
+  .navitem:hover{background:var(--line-soft);}
+  .navitem.active{background:var(--ink-900); color:var(--paper);}
+  .navitem .dot{width:6px;height:6px;border-radius:50%; background:currentColor; opacity:.5; flex:none;}
+
+  .level-badge{
+    margin-top:auto; padding:12px; border-radius:12px; background:var(--brass-soft);
+    border:1px solid var(--line);
+  }
+  .level-badge .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-500);}
+  .level-badge .val{font-family:'Fraunces',serif; font-size:22px; font-weight:600; color:var(--brass); margin-top:2px;}
+
+  /* Main */
+  main{padding:32px 40px 80px; max-width:980px;}
+  @media (max-width:840px){ main{padding:22px 18px 60px;} }
+  .view{display:none;}
+  .view.active{display:block;}
+  .eyebrow{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--brass); font-weight:700; margin-bottom:6px;}
+  .lede{color:var(--ink-700); max-width:62ch; margin:0 0 22px;}
+
+  .grid{display:grid; gap:14px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  .g4{grid-template-columns:repeat(4,1fr);}
+  @media (max-width:700px){ .g2,.g3,.g4{grid-template-columns:1fr 1fr;} }
+  @media (max-width:480px){ .g2,.g3,.g4{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow);
+  }
+  .card.flat{box-shadow:none;}
+  .stat{padding:16px;}
+  .stat .num{font-family:'Fraunces',serif; font-size:28px; font-weight:600;}
+  .stat .lbl{font-size:12px; color:var(--ink-500); margin-top:2px;}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:9px;
+    border:1px solid var(--ink-900); background:var(--ink-900); color:var(--paper);
+    font-weight:600; font-size:13.5px; cursor:pointer; text-decoration:none;
+  }
+  .btn:hover{opacity:.88;}
+  .btn.secondary{background:transparent; color:var(--ink-900); border-color:var(--line);}
+  .btn.small{padding:7px 12px; font-size:12.5px;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .btn.teal{background:var(--teal); border-color:var(--teal);}
+  .btn.brass{background:var(--brass); border-color:var(--brass);}
+
+  .pill{
+    display:inline-flex; align-items:center; padding:3px 10px; border-radius:99px;
+    font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+  }
+  .pill.a2{background:var(--teal-soft); color:var(--teal);}
+  .pill.b1{background:var(--good-soft); color:var(--good);}
+  .pill.b2{background:var(--brass-soft); color:var(--brass);}
+  .pill.c1{background:var(--danger-soft); color:var(--danger);}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-500); padding:8px 10px; border-bottom:1px solid var(--line);}
+  td{padding:10px; border-bottom:1px solid var(--line-soft); vertical-align:top;}
+  .table-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-raised);}
+  .table-wrap table{margin:0;}
+
+  .tabs{display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:0;}
+  .tab{
+    padding:8px 14px; border-radius:9px 9px 0 0; cursor:pointer; font-size:13px; font-weight:600;
+    color:var(--ink-500); border:1px solid transparent; margin-bottom:-1px;
+  }
+  .tab.active{color:var(--ink-900); border-color:var(--line); border-bottom-color:var(--paper-raised); background:var(--paper-raised);}
+
+  .qcard{border:1px solid var(--line); border-radius:var(--radius); padding:16px; background:var(--paper-raised); margin-bottom:12px;}
+  .qcard .qtext{font-weight:600; margin-bottom:10px;}
+  .opt{
+    display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--line);
+    border-radius:9px; margin-bottom:7px; cursor:pointer; font-size:13.5px;
+  }
+  .opt:hover{border-color:var(--ink-500);}
+  .opt.selected{border-color:var(--teal); background:var(--teal-soft);}
+  .opt.correct{border-color:var(--good); background:var(--good-soft);}
+  .opt.incorrect{border-color:var(--danger); background:var(--danger-soft);}
+  .opt input{accent-color:var(--teal);}
+  .feedback{font-size:13px; margin-top:8px; padding:10px 12px; border-radius:9px;}
+  .feedback.good{background:var(--good-soft); color:var(--good);}
+  .feedback.bad{background:var(--danger-soft); color:var(--danger);}
+
+  textarea, input[type=text]{
+    width:100%; font-family:inherit; font-size:14px; padding:10px 12px; border:1px solid var(--line);
+    border-radius:9px; background:var(--paper); color:var(--ink-900); resize:vertical;
+  }
+  textarea:focus, input[type=text]:focus, button:focus-visible, .navitem:focus-visible, .opt:focus-visible{
+    outline:2px solid var(--teal); outline-offset:1px;
+  }
+  select{font-family:inherit; padding:6px 8px; border-radius:7px; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink-900);}
+
+  .wordcount{font-size:12px; color:var(--ink-500); margin-top:4px;}
+  .wordcount.ok{color:var(--good);}
+  .wordcount.warn{color:var(--danger);}
+
+  .timerbox{display:flex; align-items:center; justify-content:space-between; gap:14px; background:var(--ink-900); color:var(--paper); padding:14px 18px; border-radius:var(--radius); margin-bottom:16px; flex-wrap:wrap;}
+  .timerbox .time{font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; min-width:64px;}
+  .timerbox .phase{font-size:11px; text-transform:uppercase; letter-spacing:.08em; opacity:.75;}
+  .timerbox .btn.secondary{color:var(--paper); border-color:rgba(255,255,255,.35);}
+  .timerbox .btn.secondary:hover{background:rgba(255,255,255,.1);}
+
+  .flashcard{
+    border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-raised);
+    padding:26px; text-align:center; cursor:pointer; min-height:150px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:6px; box-shadow:var(--shadow);
+  }
+  .flashcard .term{font-family:'Fraunces',serif; font-size:24px; font-weight:600;}
+  .flashcard .pos{font-size:11px; color:var(--brass); text-transform:uppercase; letter-spacing:.06em;}
+  .flashcard .hint{font-size:11.5px; color:var(--ink-500); margin-top:10px;}
+
+  .reorder-item{
+    padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:var(--paper-raised);
+    margin-bottom:6px; cursor:grab; display:flex; gap:10px; align-items:flex-start; font-size:13.5px;
+  }
+  .reorder-item .idx{font-family:'IBM Plex Mono',monospace; color:var(--brass); font-weight:600; flex:none;}
+  .reorder-item .txt{flex:1;}
+  .reorder-item .updown{display:flex; flex-direction:column; gap:3px; flex:none;}
+  .reorder-item .updown button{
+    width:26px; height:22px; border:1px solid var(--line); background:var(--paper); border-radius:6px;
+    color:var(--ink-700); font-size:11px; cursor:pointer; line-height:1; padding:0;
+  }
+  .reorder-item .updown button:disabled{opacity:.3; cursor:default;}
+  .reorder-item.dragging{opacity:.4;}
+
+  .passage{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px; font-size:14.5px; line-height:1.75; margin-bottom:16px;
+  }
+  .passage .blank-select{margin:0 2px;}
+
+  .checklist label{display:flex; gap:8px; align-items:center; font-size:13.5px; padding:5px 0;}
+
+  hr.rule{border:none; border-top:1px solid var(--line); margin:26px 0;}
+
+  .section-title-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:4px;}
+
+  .footer-note{font-size:12px; color:var(--ink-500); margin-top:40px; border-top:1px solid var(--line); padding-top:14px;}
+
+  .strategy-item{border-left:3px solid var(--brass); padding:4px 0 4px 14px; margin-bottom:14px;}
+  .strategy-item .k{font-size:11px; color:var(--ink-500); text-transform:uppercase; letter-spacing:.05em;}
+
+  .progressbar{height:7px; border-radius:99px; background:var(--line-soft); overflow:hidden;}
+  .progressbar > i{display:block; height:100%; background:var(--teal); border-radius:99px;}
+
+  .rating{display:flex; gap:6px;}
+  .rating button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line); background:var(--paper-raised); cursor:pointer; font-weight:600; color:var(--ink-700);}
+  .rating button.on{background:var(--brass); border-color:var(--brass); color:#fff;}
+
+  .toast{
+    position:fixed; bottom:20px; right:20px; background:var(--ink-900); color:var(--paper); padding:12px 18px;
+    border-radius:10px; font-size:13px; box-shadow:var(--shadow); z-index:50; opacity:0; transform:translateY(8px);
+    transition:opacity .25s, transform .25s; pointer-events:none;
+  }
+  .toast.show{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion:reduce){ .toast{transition:none;} }
+
+  /* Profile row + gate */
+  .profile-row{
+    display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 10px;
+    border:1px solid var(--line); border-radius:10px; background:var(--paper); font-size:12.5px;
+    flex-wrap:wrap; /* if the logout button's confirm text can't fit beside the name, wrap it to its
+      own line instead of squeezing .who to near-zero width (which made every character of the
+      sync-status text wrap onto its own line and made the button itself hard to hit a second time) */
+  }
+  .profile-row .who{overflow:hidden; min-width:0; flex:1 1 auto;}
+  .profile-row .who .nm{font-weight:700; color:var(--ink-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .profile-row .who .sync{font-size:10.5px; color:var(--teal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .profile-row .who .sync.off{color:var(--ink-500);}
+  .profile-row button{
+    border:none; background:none; color:var(--ink-500); font-size:11px; cursor:pointer; text-decoration:underline;
+    padding:0; flex:none; white-space:nowrap; max-width:100%;
+  }
+
+  .gate{
+    position:fixed; inset:0; background:rgba(20,26,34,.55); z-index:80; display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .gate-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:18px; padding:30px; max-width:400px; width:100%;
+    box-shadow:var(--shadow);
+  }
+  .gate-card h2{font-size:20px; margin-bottom:6px;}
+  .gate-card p{font-size:13px; color:var(--ink-700); margin:0 0 18px;}
+  .gate-card label{display:block; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-500); margin:14px 0 5px;}
+  .gate-card .err{font-size:12.5px; color:var(--danger); margin-top:10px; display:none;}
+  .gate-card .btn{width:100%; justify-content:center; margin-top:18px;}
+  .gate-card .skip{display:block; text-align:center; margin-top:12px; font-size:12px; color:var(--ink-500); cursor:pointer; text-decoration:underline; background:none; border:none;}
+</style>
+
+<div class="gate" id="gateOverlay" style="display:none;">
+  <div class="gate-card">
+    <h2>학습 프로필 시작하기</h2>
+    <p>이름과 4자리 PIN을 정하면, 같은 이름·PIN으로 다른 기기에서 열었을 때 학습 기록이 그대로 이어집니다. 여러 명이 이 링크를 함께 쓸 경우 각자의 진행 상황도 분리되어 저장됩니다.</p>
+    <label for="gateName">이름 (닉네임)</label>
+    <input type="text" id="gateName" placeholder="예: Leo" maxlength="24">
+    <label for="gatePin">PIN (숫자 4자리)</label>
+    <input type="text" id="gatePin" placeholder="예: 2026" inputmode="numeric" maxlength="4">
+    <div class="err" id="gateErr"></div>
+    <button class="btn brass" id="gateSubmit">시작하기</button>
+    <button class="skip" id="gateSkip">건너뛰고 이 브라우저에만 저장하기</button>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="mark">PC</span>
+      <div>
+        <div class="brand-name">PTE Compass</div>
+        <div class="brand-sub">Personal study room</div>
+      </div>
+    </div>
+
+    <nav class="navlist" id="navlist">
+      <div class="navgroup-label">시작하기</div>
+      <button class="navitem" data-view="dashboard"><span class="dot"></span>대시보드</button>
+      <button class="navitem" data-view="diagnostic"><span class="dot"></span>레벨 진단테스트</button>
+      <button class="navitem" data-view="overview"><span class="dot"></span>시험 구조 &amp; 전략</button>
+
+      <div class="navgroup-label">기초 다지기</div>
+      <button class="navitem" data-view="vocab"><span class="dot"></span>어휘 (Vocabulary)</button>
+      <button class="navitem" data-view="grammar"><span class="dot"></span>문법 (Grammar)</button>
+
+      <div class="navgroup-label">영역별 연습</div>
+      <button class="navitem" data-view="speaking"><span class="dot"></span>Speaking</button>
+      <button class="navitem" data-view="listening"><span class="dot"></span>Listening</button>
+      <button class="navitem" data-view="reading"><span class="dot"></span>Reading</button>
+      <button class="navitem" data-view="writing"><span class="dot"></span>Writing</button>
+    </nav>
+
+    <div class="profile-row" id="profileRow" style="display:none;">
+      <div class="who">
+        <div class="nm" id="profileName">-</div>
+        <div class="sync" id="profileSyncState">동기화 중</div>
+      </div>
+      <button id="switchProfileBtn" title="로그아웃하면 다음에 열 때 이름·PIN을 다시 입력해야 해요">로그아웃</button>
+    </div>
+
+    <div class="level-badge">
+      <div class="lbl">현재 추정 레벨</div>
+      <div class="val" id="sidebarLevel">미진단</div>
+      <div class="lbl" id="sidebarScore" style="margin-top:2px;"></div>
+    </div>
+  </aside>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="eyebrow">Dashboard</div>
+      <h1>안녕하세요, Leo님.</h1>
+      <p class="lede">PTE Academic 준비를 위한 개인 학습실입니다. 왼쪽 진단테스트로 현재 실력을 확인하고, 레벨에 맞는 어휘·문법·4개 영역 연습을 이어가세요. 이름·PIN으로 프로필을 만들면 진행 상황이 다른 기기에서도 그대로 이어집니다.</p>
+
+      <div class="grid g4" id="dashStats" style="margin-bottom:20px;"></div>
+
+      <div class="grid g2" style="align-items:start;">
+        <div class="card">
+          <h3 style="font-size:16px;">이번 주 추천 학습 계획</h3>
+          <div id="planBox"></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:16px;">PTE 점수 밴드 한눈에 보기</h3>
+          <div class="table-wrap" style="border:none;">
+            <table>
+              <thead><tr><th>점수</th><th>CEFR</th><th>의미</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">85–90</td><td><span class="pill c1">C2</span></td><td>측정 가능한 최고 수준. 듣고 읽는 거의 모든 것을 이해</td></tr>
+                <tr><td class="mono">76–84</td><td><span class="pill c1">C1</span></td><td>매우 높은 유창성. 대부분의 대학원 입학 요건 충족</td></tr>
+                <tr><td class="mono">59–75</td><td><span class="pill b2">B2</span></td><td>복잡한 글의 요지 파악, 원어민과 편하게 소통 (일반적 대학 입학 기준)</td></tr>
+                <tr><td class="mono">43–58</td><td><span class="pill b1">B1</span></td><td>익숙한 주제의 핵심 내용 이해 및 표현 가능</td></tr>
+                <tr><td class="mono">30–42</td><td><span class="pill a2">A2</span></td><td>기본적인 표현 이해, 일상적 과업 소통 가능</td></tr>
+                <tr><td class="mono">10–29</td><td><span class="pill a2">A1</span></td><td>매우 친숙한 표현과 기초 문구만 이해</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <hr class="rule">
+      <h3 style="font-size:16px;">영역별 진행 현황</h3>
+      <div class="grid g4" id="skillProgress"></div>
+    </section>
+
+    <!-- DIAGNOSTIC -->
+    <section class="view" id="view-diagnostic">
+      <div class="eyebrow">Level check · 약 15분</div>
+      <h1>레벨 진단테스트</h1>
+      <p class="lede">어휘, 문법, 독해로 구성된 20문항입니다. A2 → C1 순서로 난이도가 올라가며, 결과에 따라 추천 시작 레벨과 학습 계획을 안내해 드립니다. 실제 PTE 점수가 아닌 참고용 추정치입니다.</p>
+      <div id="diagnosticHost"></div>
+    </section>
+
+    <!-- OVERVIEW / STRATEGY -->
+    <section class="view" id="view-overview">
+      <div class="eyebrow">Official format · Pearson PTE 공식 자료 기반</div>
+      <h1>시험 구조 &amp; 영역별 전략</h1>
+      <p class="lede">PTE Academic은 Speaking &amp; Writing(76–84분) · Reading(23–30분) · Listening(31–39분) 세 파트, 총 20개 이상의 문항 유형으로 구성됩니다. 아래 표와 전략은 Pearson 공식 홈페이지(pearsonpte.com)의 시험 형식 설명을 바탕으로 정리했습니다.</p>
+      <div class="tabs" id="ovTabs"></div>
+      <div id="ovHost"></div>
+    </section>
+
+    <!-- VOCAB -->
+    <section class="view" id="view-vocab">
+      <div class="eyebrow">Vocabulary</div>
+      <h1>레벨별 어휘</h1>
+      <p class="lede">카드를 눌러 뜻과 예문을 확인하고, 각 레벨 하단의 퀴즈로 암기 상태를 점검하세요. Writing/Speaking의 어휘 점수와 Reading 지문 이해에 바로 연결되는 단어들입니다.</p>
+      <div class="tabs" id="vocTabs"></div>
+      <div id="vocHost"></div>
+    </section>
+
+    <!-- GRAMMAR -->
+    <section class="view" id="view-grammar">
+      <div class="eyebrow">Grammar</div>
+      <h1>레벨별 문법</h1>
+      <p class="lede">Write Essay, Summarize Written/Spoken Text, Write from Dictation 등에서 감점의 가장 큰 원인은 문법 오류입니다. 핵심 포인트만 짧게 학습하고 바로 문제로 확인하세요.</p>
+      <div class="tabs" id="gramTabs"></div>
+      <div id="gramHost"></div>
+    </section>
+
+    <!-- SPEAKING -->
+    <section class="view" id="view-speaking">
+      <div class="eyebrow">Speaking · 9 item types</div>
+      <h1>Speaking 연습</h1>
+      <p class="lede">이 앱은 마이크 녹음 대신 <b>준비·응답 타이머</b>와 <b>음성 안내(TTS)</b>, <b>자기평가 체크리스트</b>로 실전 리듬을 훈련합니다. 실제 시험처럼 소리 내어 답하고, 끝난 뒤 스스로 채점해 기록을 남기세요.</p>
+      <div class="tabs" id="spTabs"></div>
+      <div id="spHost"></div>
+    </section>
+
+    <!-- LISTENING -->
+    <section class="view" id="view-listening">
+      <div class="eyebrow">Listening · 8 item types</div>
+      <h1>Listening 연습</h1>
+      <p class="lede">브라우저 내장 음성합성(TTS)이 시험관 음성을 대신 읽어줍니다. <b>재생은 실제 시험처럼 한 번만</b> 듣고 바로 답을 작성해 보세요. (음성 재생은 브라우저 환경에 따라 지원되지 않을 수 있습니다.)</p>
+      <div class="tabs" id="liTabs"></div>
+      <div id="liHost"></div>
+    </section>
+
+    <!-- READING -->
+    <section class="view" id="view-reading">
+      <div class="eyebrow">Reading · 5 item types</div>
+      <h1>Reading 연습</h1>
+      <p class="lede">지문 이해(MCQ), 문단 재배열(Reorder Paragraph), 빈칸 채우기(Fill in the Blanks) 세 가지 유형을 레벨별로 연습합니다.</p>
+      <div class="tabs" id="reTabs"></div>
+      <div id="reHost"></div>
+    </section>
+
+    <!-- WRITING -->
+    <section class="view" id="view-writing">
+      <div class="eyebrow">Writing · 2 item types</div>
+      <h1>Writing 연습</h1>
+      <p class="lede">Summarize Written Text(10분, 5–75단어 한 문장)와 Write Essay(20분, 200–300단어)를 실전 타이머와 함께 연습합니다.</p>
+      <div class="tabs" id="wrTabs"></div>
+      <div id="wrHost"></div>
+    </section>
+
+    <div class="footer-note">
+      PTE Compass는 개인 학습 보조 도구입니다. 문항과 지문은 Pearson PTE 공식 시험 형식·채점 기준 설명을 참고해 새로 제작한 연습용 자료이며, 실제 시험 문제를 복제하지 않습니다. 이름·PIN 프로필을 만들면 학습 기록이 클라우드에 저장되어 다른 기기에서도 이어집니다(계정 로그인이 아닌 간단한 이름+PIN 방식이므로, PIN을 아는 사람과는 기록이 공유될 수 있어요). 프로필을 건너뛰면 이 브라우저(로컬 저장소)에만 저장됩니다.
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================== STORAGE ============================== */
+const LOCAL_STORE_KEY = "pteCompass_v1";
+const PROFILE_ID_KEY = "pteCompass_profileId";
+const PROFILE_NAME_KEY = "pteCompass_profileName";
+const GATE_SKIPPED_KEY = "pteCompass_gateSkipped";
+
+function defaultStore(){
+  return {
+    level: null, // 'A2'|'B1'|'B2'|'C1'
+    estScore: null,
+    diagnosticDone:false,
+    skills:{ vocab:{done:0,total:0}, grammar:{done:0,total:0}, reading:{done:0,total:0}, listening:{done:0,total:0}, speaking:{done:0}, writing:{done:0} }
+  };
+}
+function loadLocalStore(){
+  try{ return JSON.parse(localStorage.getItem(LOCAL_STORE_KEY)) || defaultStore(); }
+  catch(e){ return defaultStore(); }
+}
+let store = defaultStore();
+
+/* ---- Supabase backend (replaces the Claude Artifact `db` capability) ---- */
+const SUPABASE_URL = "https://qwgczutecgghotdodeej.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Z2N6dXRlY2dnaG90ZG9kZWVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1MzMzMjQsImV4cCI6MjEwNDEwOTMyNH0.N86LowzfvzJt1PWgIVNrTG_F4wuotJYDroQrF5QUGjU";
+
+async function supaRpc(fn, body){
+  const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
+    method:'POST',
+    headers:{
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    let msg='';
+    try{ msg = (await res.json()).message || ''; }catch(e){}
+    throw new Error(msg || ('HTTP '+res.status));
+  }
+  return res.json();
+}
+
+let profileId = null;     // Supabase profiles.id for the active profile, when synced
+let profileName = "";
+let saveTimer = null;
+
+function setSyncBadge(text, on){
+  const el=document.getElementById('profileSyncState');
+  if(!el) return;
+  el.textContent=text; el.className='sync'+(on?'':' off');
+}
+
+function saveStore(){
+  try{ localStorage.setItem(LOCAL_STORE_KEY, JSON.stringify(store)); }catch(e){}
+  if(profileId){
+    setSyncBadge('저장 중…', true);
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(()=>{
+      supaRpc('save_state', { p_id: profileId, p_state: store })
+        .then(()=> setSyncBadge('기기 간 동기화됨', true))
+        .catch(()=> setSyncBadge('동기화 실패 (이 기기엔 저장됨)', false));
+    }, 700);
+  }
+}
+function bump(skill, n){ n=n||1; store.skills[skill].done += n; saveStore(); renderSidebarLevel(); renderDashboard(); }
+
+/* ---- Profile (name+PIN "login" backed by Supabase RPC functions) ---- */
+function showGate(){ document.getElementById('gateOverlay').style.display='flex'; }
+function hideGate(){ document.getElementById('gateOverlay').style.display='none'; }
+
+function showProfileRow(name, synced){
+  const row=document.getElementById('profileRow');
+  row.style.display='flex';
+  document.getElementById('profileName').textContent = name;
+  setSyncBadge(synced ? '기기 간 동기화됨' : '이 브라우저에만 저장됨', synced);
+}
+
+// Returns 'ok' | 'badpin' | 'error'. On 'ok', `store`/`profileId`/`profileName`
+// are already updated and persisted to localStorage.
+async function loginProfile(name, pin){
+  const rows = await supaRpc('login_profile', { p_name: name.trim(), p_pin: pin.trim() });
+  const row = rows && rows[0];
+  if(!row || !row.id) return 'badpin';
+  profileId = row.id;
+  store = row.state && Object.keys(row.state).length ? row.state : defaultStore();
+  profileName = name.trim();
+  try{
+    localStorage.setItem(PROFILE_ID_KEY, profileId);
+    localStorage.setItem(PROFILE_NAME_KEY, profileName);
+  }catch(e){}
+  showProfileRow(profileName, true);
+  return 'ok';
+}
+
+async function resumeProfile(id){
+  try{
+    const state = await supaRpc('get_state', { p_id: id });
+    if(state === null) return false; // id not found server-side
+    profileId = id;
+    store = (state && Object.keys(state).length) ? state : defaultStore();
+    profileName = localStorage.getItem(PROFILE_NAME_KEY) || '';
+    showProfileRow(profileName, true);
+    return true;
+  }catch(e){ return false; }
+}
+
+function doLogout(){
+  try{
+    localStorage.removeItem(PROFILE_ID_KEY);
+    localStorage.removeItem(PROFILE_NAME_KEY);
+  }catch(e){}
+  location.reload();
+}
+
+// Native window.confirm()/alert() dialogs are unavailable in some sandboxed embed
+// contexts (they silently no-op or throw), which would make a confirm-gated action
+// look completely unresponsive. So logout uses a plain two-click, in-page confirm
+// instead of window.confirm — no browser dialog API involved at all.
+function armLogoutConfirm(btn){
+  let armed = false;
+  let revertTimer = null;
+  btn.addEventListener('click', ()=>{
+    if(!armed){
+      armed = true;
+      btn.textContent = '정말요? (다시 클릭)';
+      clearTimeout(revertTimer);
+      revertTimer = setTimeout(()=>{ armed=false; btn.textContent='로그아웃'; }, 4000);
+      return;
+    }
+    clearTimeout(revertTimer);
+    doLogout();
+  });
+}
+
+async function initApp(){
+  let savedId=null;
+  try{ savedId = localStorage.getItem(PROFILE_ID_KEY); }catch(e){}
+  if(savedId){
+    const ok = await resumeProfile(savedId);
+    if(ok){ startApp(); return; }
+  }
+
+  // If the person already chose "skip / save to this browser only" once,
+  // don't re-prompt them on every later load.
+  let gateSkipped=false;
+  try{ gateSkipped = localStorage.getItem(GATE_SKIPPED_KEY)==='1'; }catch(e){}
+  if(gateSkipped){
+    store = loadLocalStore();
+    document.getElementById('profileRow').style.display='none';
+    startApp();
+    return;
+  }
+
+  showGate();
+  document.getElementById('gateSubmit').onclick = async ()=>{
+    const name = document.getElementById('gateName').value.trim();
+    const pin = document.getElementById('gatePin').value.trim();
+    const err = document.getElementById('gateErr');
+    err.style.display='none';
+    if(!name || !/^[0-9]{4}$/.test(pin)){
+      err.textContent = '이름을 입력하고, PIN은 숫자 4자리로 입력해주세요.';
+      err.style.display='block';
+      return;
+    }
+    try{
+      const result = await loginProfile(name, pin);
+      if(result === 'badpin'){
+        err.textContent = '이미 사용 중인 이름이고 PIN이 일치하지 않아요. 다른 이름을 쓰거나 정확한 PIN을 입력해주세요.';
+        err.style.display='block';
+        return;
+      }
+      hideGate();
+      startApp();
+    }catch(e){
+      err.textContent = '동기화 연결에 실패했어요. 이 브라우저에만 저장하며 계속할 수 있습니다.';
+      err.style.display='block';
+    }
+  };
+  document.getElementById('gateSkip').onclick = ()=>{
+    store = loadLocalStore();
+    try{ localStorage.setItem(GATE_SKIPPED_KEY, '1'); }catch(e){}
+    hideGate();
+    document.getElementById('profileRow').style.display='none';
+    startApp();
+  };
+}
+armLogoutConfirm(document.getElementById('switchProfileBtn'));
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ============================== TTS HELPER ============================== */
+function speak(text, rate){
+  if(!('speechSynthesis' in window)){ toast('이 브라우저는 음성 재생을 지원하지 않아요. 지문을 눈으로 읽고 연습하세요.'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate = rate || 0.95;
+  window.speechSynthesis.speak(u);
+}
+
+/* ============================== TIMER HELPER ============================== */
+function runTimer(hostEl, phases, onDone){
+  // phases: [{label, seconds}]
+  let pi=0, remaining=phases[0].seconds, iv=null;
+  hostEl.innerHTML = `<div class="timerbox"><div><div class="phase" id="tphase"></div><div class="time mono" id="tclock"></div></div><button class="btn secondary small" id="tSkip">건너뛰기</button></div>`;
+  const phaseEl=hostEl.querySelector('#tphase'), clockEl=hostEl.querySelector('#tclock'), skipBtn=hostEl.querySelector('#tSkip');
+  function render(){
+    phaseEl.textContent = phases[pi].label;
+    const m=Math.floor(remaining/60), s=remaining%60;
+    clockEl.textContent = m+':'+String(s).padStart(2,'0');
+  }
+  function nextPhase(){
+    pi++;
+    if(pi>=phases.length){ clearInterval(iv); phaseEl.textContent='완료'; clockEl.textContent='0:00'; if(onDone) onDone(); return; }
+    remaining=phases[pi].seconds; render();
+    if(phases[pi].onEnter) phases[pi].onEnter();
+  }
+  render();
+  if(phases[0].onEnter) phases[0].onEnter();
+  iv=setInterval(()=>{
+    remaining--;
+    if(remaining<0){ nextPhase(); return; }
+    render();
+  },1000);
+  skipBtn.onclick=()=>{ remaining=0; };
+  return ()=>clearInterval(iv);
+}
+
+/* ============================== NAV ============================== */
+const views = ['dashboard','diagnostic','overview','vocab','grammar','speaking','listening','reading','writing'];
+function showView(name){
+  views.forEach(v=>{
+    document.getElementById('view-'+v).classList.toggle('active', v===name);
+  });
+  document.querySelectorAll('.navitem').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  window.scrollTo({top:0});
+}
+document.getElementById('navlist').addEventListener('click', e=>{
+  const b=e.target.closest('.navitem'); if(!b) return;
+  showView(b.dataset.view);
+});
+
+/* ============================== TABS HELPER ============================== */
+function buildTabs(tabHostEl, contentHostEl, tabs, renderer, defaultIndex){
+  let current = (defaultIndex!=null && defaultIndex>=0 && defaultIndex<tabs.length) ? defaultIndex : 0;
+  tabHostEl.innerHTML = tabs.map((t,i)=>`<div class="tab${i===current?' active':''}" data-i="${i}">${t.label}</div>`).join('');
+  function render(){ contentHostEl.innerHTML=''; renderer(tabs[current], contentHostEl); }
+  tabHostEl.querySelectorAll('.tab').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      current = +el.dataset.i;
+      tabHostEl.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      render();
+    });
+  });
+  render();
+}
+
+/* ============================== MCQ RENDER HELPER ============================== */
+function renderMCQ(container, q, idx, onAnswered){
+  const wrap=document.createElement('div'); wrap.className='qcard';
+  wrap.innerHTML = `<div class="qtext">${idx!=null? (idx+1)+'. ':''}${q.q}</div>` +
+    q.options.map((o,i)=>`<div class="opt" data-i="${i}">${o}</div>`).join('') +
+    `<div class="feedback" style="display:none;"></div>`;
+  const opts=wrap.querySelectorAll('.opt');
+  const fb=wrap.querySelector('.feedback');
+  let answered=false;
+  opts.forEach(o=>{
+    o.addEventListener('click', ()=>{
+      if(answered) return; answered=true;
+      const chosen=+o.dataset.i;
+      opts.forEach(x=>{
+        const xi=+x.dataset.i;
+        if(xi===q.answer) x.classList.add('correct');
+        else if(xi===chosen) x.classList.add('incorrect');
+      });
+      const ok = chosen===q.answer;
+      fb.style.display='block';
+      fb.className='feedback '+(ok?'good':'bad');
+      fb.textContent = (ok?'정답! ':'오답. 정답: '+q.options[q.answer]+'. ') + (q.explain||'');
+      if(onAnswered) onAnswered(ok);
+    });
+  });
+  container.appendChild(wrap);
+}
+
+/* ============================================================
+   CONTENT DATA
+   ============================================================ */
+
+const LEVELS = ['A2','B1','B2','C1'];
+const LEVEL_LABEL = {A2:'초급 다지기', B1:'중급 기초', B2:'중상급', C1:'고급 (원어민 근접)'};
+
+/* ---------- OVERVIEW: official-format-based structure & strategy ---------- */
+const OVERVIEW = {
+  "Speaking & Writing": {
+    time:"76–84분 · 문항 9종", intro:"말하기와 쓰기가 한 파트로 진행됩니다. 헤드셋 착용 상태에서 답변이 자동 녹음되며, 이후 문항으로 넘어가면 다시 돌아갈 수 없습니다.",
+    items:[
+      {name:"Personal Introduction", time:"준비 25초 + 녹음 30초", scored:"채점 제외 (자기소개, 워밍업)", tip:"점수엔 포함되지 않지만 이후 면접관/기관에 제출될 수 있어 또박또박, 밝은 톤으로 30초를 꽉 채워 말하는 연습을 하세요."},
+      {name:"Read Aloud", time:"준비 30–40초", scored:"Reading, Speaking, 발음, 유창성", tip:"눈으로 먼저 훑으며 어려운 단어와 끊어읽기 지점에 표시. 문장 끝을 흐리지 말고 강세를 살려 자연스러운 속도로."},
+      {name:"Repeat Sentence", time:"총 15초", scored:"Listening, Speaking, 발음, 유창성", tip:"단어를 토씨 하나까지 외우려 하지 말고 '의미 덩어리(청크)'로 기억해 재구성하세요. 못 들은 부분은 추측해서라도 끝까지 말하는 게 유리합니다."},
+      {name:"Describe Image", time:"준비 25초 + 녹음 40초", scored:"Speaking, 발음, 유창성", tip:"고정 템플릿(유형→핵심 트렌드→세부 데이터→마무리)을 만들어두고 40초를 침묵 없이 채우는 연습을 반복하세요."},
+      {name:"Retell Lecture", time:"준비 10초 + 녹음 40초", scored:"Listening, Speaking, 발음, 유창성", tip:"들으며 주제어·숫자·전환어(however, therefore)만 메모. 완벽한 문장 대신 핵심 요지를 자신의 말로 재구성."},
+      {name:"Answer Short Question", time:"총 10초", scored:"Listening", tip:"한두 단어면 충분합니다. 완전한 문장으로 답하려다 시간을 넘기지 마세요."},
+      {name:"Summarize Group Discussion", time:"준비 10초 + 녹음 2분", scored:"Listening, Speaking, 발음, 유창성", tip:"화자별 주장을 구분해 메모하고, '몇 명은 A를, 다른 몇 명은 B를 주장했다' 구조로 균형 있게 요약하세요."},
+      {name:"Respond to a Situation", time:"준비 10초 + 녹음 40초", scored:"Speaking, 발음, 유창성", tip:"상황극에 가깝습니다. 요청/사과/제안 등 기능어(could you, I'm afraid, why don't we)를 미리 세트로 익혀두세요."},
+      {name:"Summarize Written Text", time:"10분", scored:"Reading, Writing", tip:"지문 전체를 한 문장(5–75단어)으로. 접속사로 절을 연결해 정보 밀도를 높이세요."},
+      {name:"Write Essay", time:"20분 · 200–300단어", scored:"Writing, 문법, 철자, 어휘, 글의 구조", tip:"서론-찬성/반대 또는 원인-본론 2단락-결론의 4단락 구조를 고정 템플릿으로 만들어두면 시간 관리에 유리합니다."}
+    ]
+  },
+  "Listening": {
+    time:"31–39분 · 문항 8종", intro:"오디오/비디오는 원칙적으로 한 번만 재생됩니다. 노트테이킹이 핵심 전략입니다.",
+    items:[
+      {name:"Summarize Spoken Text", time:"오디오 60–90초 / 작성 10분", scored:"내용, 형식, 문법, 어휘, 철자 (부분점수)", tip:"주제-핵심 근거 2–3개-결론만 50–70단어로. 오디오 중 숫자와 고유명사를 놓치지 마세요."},
+      {name:"Multiple Choice (복수 정답)", time:"오디오 80–120초", scored:"Listening (부분점수, 오답 시 감점)", tip:"확신 없는 보기는 선택하지 않는 편이 유리합니다. 오답 선택 시 감점되기 때문입니다."},
+      {name:"Fill in the Blanks (직접 입력)", time:"오디오 30–60초", scored:"Listening, Writing (단어별 부분점수)", tip:"철자까지 정확해야 점수가 됩니다. 헷갈리는 동음이의어(their/there)에 유의하세요."},
+      {name:"Highlight Correct Summary", time:"오디오 30–90초", scored:"Listening, Reading (정오답만, 부분점수 없음)", tip:"오답 보기는 대개 지나치게 좁거나 원문에 없는 정보를 포함합니다. 소거법이 효과적입니다."},
+      {name:"Multiple Choice (단일 정답)", time:"오디오 30–90초", scored:"Listening (정오답만)", tip:"질문을 먼저 읽고 무엇을 들어야 하는지 정한 뒤 재생을 들으세요."},
+      {name:"Select Missing Word", time:"오디오 20–70초", scored:"Listening (정오답만)", tip:"마지막 단어가 '삐-' 소리로 대체됩니다. 문맥상 논리적으로 이어지는 결론을 고르세요."},
+      {name:"Highlight Incorrect Words", time:"오디오 15–50초", scored:"Listening, Reading (단어별 부분점수, 오답 시 감점)", tip:"화면의 대본을 눈으로 따라가며 실제 들리는 단어와 다른 부분만 클릭하세요."},
+      {name:"Write from Dictation", time:"오디오 3–5초", scored:"Listening, Writing (단어별 부분점수)", tip:"짧은 문장을 통째로 받아쓰는 유형. 대문자·마침표·철자까지 정확히."}
+    ]
+  },
+  "Reading": {
+    time:"23–30분 · 문항 5종", intro:"별도의 정해진 시간이 문항별로 없고 섹션 전체 시간 안에서 스스로 배분합니다.",
+    items:[
+      {name:"Fill in the Blanks (드롭다운)", time:"지문 최대 300단어", scored:"Reading, 문법 (빈칸별 부분점수)", tip:"빈칸 앞뒤 단어와 문법 구조(전치사, 시제 일치)를 먼저 확인하세요."},
+      {name:"Multiple Choice (복수 정답)", time:"지문 최대 350단어", scored:"Reading (부분점수, 오답 시 감점)", tip:"보기 중 지문에 없는 내용, 과장된 표현은 오답일 확률이 높습니다."},
+      {name:"Reorder Paragraph", time:"문단 최대 150단어", scored:"Reading (부분점수)", tip:"주제문(포괄적 진술)을 먼저 찾고, 대명사(it, this)·연결어(however, for example)로 앞뒤 문단을 추적하세요."},
+      {name:"Fill in the Blanks (드래그 앤 드롭)", time:"지문 최대 80단어", scored:"Reading, 어휘 (빈칸별 부분점수)", tip:"품사와 콜로케이션(관용적으로 함께 쓰이는 단어 조합)을 기준으로 판단하세요."},
+      {name:"Multiple Choice (단일 정답)", time:"지문 최대 300단어", scored:"Reading (정오답만)", tip:"질문 유형(주제/세부정보/추론)을 구분해 그에 맞는 독해 전략을 적용하세요."}
+    ]
+  }
+};
+
+/* ---------- VOCAB ---------- */
+const VOCAB = {
+  A2:[
+    {t:"arrive", p:"v.", d:"도착하다", e:"The flight is scheduled to arrive at 9 a.m."},
+    {t:"borrow", p:"v.", d:"빌리다", e:"Can I borrow your pen for a moment?"},
+    {t:"compare", p:"v.", d:"비교하다", e:"Students were asked to compare the two paintings."},
+    {t:"decide", p:"v.", d:"결정하다", e:"We haven't decided where to go for the trip yet."},
+    {t:"explain", p:"v.", d:"설명하다", e:"The teacher explained the rule again slowly."},
+    {t:"improve", p:"v.", d:"향상시키다", e:"Regular practice can improve your pronunciation."},
+    {t:"include", p:"v.", d:"포함하다", e:"The price includes breakfast and airport transfer."},
+    {t:"increase", p:"v./n.", d:"증가(하다)", e:"There has been a steady increase in online sales."},
+    {t:"notice", p:"v.", d:"알아차리다", e:"I didn't notice any change in the schedule."},
+    {t:"prepare", p:"v.", d:"준비하다", e:"She spent the weekend preparing for the interview."},
+    {t:"provide", p:"v.", d:"제공하다", e:"The hotel provides free wifi for all guests."},
+    {t:"receive", p:"v.", d:"받다", e:"You will receive a confirmation email shortly."},
+    {t:"remember", p:"v.", d:"기억하다", e:"Please remember to bring your ID card."},
+    {t:"suggest", p:"v.", d:"제안하다", e:"My colleague suggested a different approach."},
+    {t:"worry", p:"v.", d:"걱정하다", e:"Don't worry, the results will be out tomorrow."}
+  ],
+  B1:[
+    {t:"achieve", p:"v.", d:"성취하다", e:"It took years of effort to achieve such a result."},
+    {t:"analyze", p:"v.", d:"분석하다", e:"Researchers analyzed the survey data in detail."},
+    {t:"assume", p:"v.", d:"추정하다, 가정하다", e:"Let's not assume the meeting will start on time."},
+    {t:"benefit", p:"n./v.", d:"이점, 이득을 얻다", e:"Small businesses benefit from lower tax rates."},
+    {t:"challenge", p:"n.", d:"과제, 도전", e:"Finding affordable housing remains a major challenge."},
+    {t:"conclude", p:"v.", d:"결론짓다", e:"The report concludes that further research is needed."},
+    {t:"contribute", p:"v.", d:"기여하다", e:"Poor sleep can contribute to lower concentration."},
+    {t:"demonstrate", p:"v.", d:"입증하다, 보여주다", e:"The study demonstrates a clear link between the two factors."},
+    {t:"emphasize", p:"v.", d:"강조하다", e:"The professor emphasized the importance of citing sources."},
+    {t:"environment", p:"n.", d:"환경", e:"Companies are under pressure to protect the environment."},
+    {t:"factor", p:"n.", d:"요인", e:"Cost is a key factor in the decision."},
+    {t:"involve", p:"v.", d:"수반하다, 관련되다", e:"The project involves collaboration between three departments."},
+    {t:"occur", p:"v.", d:"발생하다", e:"The error occurred during the final stage of testing."},
+    {t:"relevant", p:"adj.", d:"관련 있는", e:"Please include only relevant details in your summary."},
+    {t:"significant", p:"adj.", d:"상당한, 중요한", e:"There was a significant drop in temperature overnight."}
+  ],
+  B2:[
+    {t:"acquire", p:"v.", d:"습득하다, 얻다", e:"Children acquire language skills rapidly at this age."},
+    {t:"adapt", p:"v.", d:"적응시키다", e:"The curriculum was adapted to suit online learners."},
+    {t:"comprehensive", p:"adj.", d:"포괄적인", e:"The report offers a comprehensive review of the industry."},
+    {t:"consequence", p:"n.", d:"결과, 영향", e:"Rising sea levels are a direct consequence of climate change."},
+    {t:"constitute", p:"v.", d:"구성하다", e:"These findings constitute strong evidence for the theory."},
+    {t:"criteria", p:"n. (pl.)", d:"기준", e:"Applicants must meet several criteria to qualify."},
+    {t:"derive", p:"v.", d:"파생되다, 유래하다", e:"Many English words derive from Latin roots."},
+    {t:"feasible", p:"adj.", d:"실현 가능한", e:"It is not economically feasible to build the plant here."},
+    {t:"hypothesis", p:"n.", d:"가설", e:"The experiment was designed to test this hypothesis."},
+    {t:"implement", p:"v.", d:"시행하다", e:"The new policy will be implemented next quarter."},
+    {t:"inevitable", p:"adj.", d:"불가피한", e:"Some delays were inevitable given the scale of the project."},
+    {t:"integrate", p:"v.", d:"통합하다", e:"The software integrates data from multiple sources."},
+    {t:"perspective", p:"n.", d:"관점", e:"The book offers a fresh perspective on urban planning."},
+    {t:"sufficient", p:"adj.", d:"충분한", e:"There wasn't sufficient evidence to support the claim."},
+    {t:"underlying", p:"adj.", d:"근본적인, 기저의", e:"The report identifies the underlying causes of the delay."}
+  ],
+  C1:[
+    {t:"ambiguous", p:"adj.", d:"애매모호한", e:"The instructions were ambiguous and open to interpretation."},
+    {t:"coherent", p:"adj.", d:"일관된, 논리정연한", e:"Her argument was coherent and well supported by evidence."},
+    {t:"discrepancy", p:"n.", d:"불일치, 차이", e:"There is a discrepancy between the two sets of figures."},
+    {t:"empirical", p:"adj.", d:"경험적인, 실증적인", e:"The claim lacks empirical support from controlled studies."},
+    {t:"exacerbate", p:"v.", d:"악화시키다", e:"Poor drainage exacerbated the flooding in the district."},
+    {t:"inherent", p:"adj.", d:"내재된, 고유의", e:"There are inherent risks in any large-scale reform."},
+    {t:"meticulous", p:"adj.", d:"세심한, 꼼꼼한", e:"The audit required meticulous attention to detail."},
+    {t:"notwithstanding", p:"prep./adv.", d:"~에도 불구하고", e:"Notwithstanding the criticism, the plan went ahead."},
+    {t:"paradigm", p:"n.", d:"패러다임, 전형적 사고 체계", e:"The discovery marked a shift in the scientific paradigm."},
+    {t:"plausible", p:"adj.", d:"그럴듯한, 타당한", e:"The committee found the explanation entirely plausible."},
+    {t:"preclude", p:"v.", d:"불가능하게 하다, 배제하다", e:"A tight budget precludes any major expansion this year."},
+    {t:"substantiate", p:"v.", d:"입증하다", e:"The witness failed to substantiate her account of events."},
+    {t:"tangential", p:"adj.", d:"주제와 관련이 적은, 접선의", e:"His comments were tangential to the main discussion."},
+    {t:"unprecedented", p:"adj.", d:"전례 없는", e:"The company reported unprecedented growth this year."},
+    {t:"vindicate", p:"v.", d:"정당성을 입증하다", e:"The final results vindicated her original hypothesis."}
+  ]
+};
+
+/* ---------- GRAMMAR ---------- */
+const GRAMMAR = {
+  A2:[
+    {title:"현재완료 vs 과거시제", explain:"과거시제는 '끝난 특정 시점'(yesterday, in 2019), 현재완료(have/has + p.p.)는 '현재까지 이어지는 경험/결과'(already, since, for, ever)에 씁니다.",
+      qs:[
+        {q:"I ___ to Australia twice.", options:["went","have been","am going","go"], answer:1, explain:"횟수 경험은 현재완료(have been)."},
+        {q:"She ___ the report yesterday.", options:["has finished","finishes","finished","finish"], answer:2, explain:"yesterday는 특정 과거 시점 → 과거시제."},
+        {q:"They ___ here since 2020.", options:["lived","live","have lived","are living"], answer:2, explain:"since + 시작점 → 현재완료."},
+        {q:"I ___ my keys — have you seen them?", options:["lost","have lost","lose","was losing"], answer:1, explain:"현재에 영향을 주는 결과 → 현재완료."},
+        {q:"He ___ the exam last month.", options:["has passed","passed","pass","passing"], answer:1, explain:"last month는 특정 과거 → 과거시제."}
+      ]},
+    {title:"관사 a / an / the", explain:"처음 언급하거나 특정하지 않은 단수 명사엔 a/an, 이미 언급됐거나 유일한 대상엔 the를 씁니다. 복수/불가산 명사의 일반적 진술엔 관사를 생략합니다.",
+      qs:[
+        {q:"I saw ___ interesting movie last night.", options:["a","an","the","(no article)"], answer:1, explain:"모음 발음 시작(interesting) → an."},
+        {q:"___ sun rises in the east.", options:["A","An","The","(no article)"], answer:2, explain:"유일한 대상 → the."},
+        {q:"She works as ___ engineer.", options:["a","an","the","(no article)"], answer:1, explain:"모음 발음(engineer) → an."},
+        {q:"___ water is essential for life.", options:["A","An","The","(no article)"], answer:3, explain:"불가산명사의 일반 진술 → 무관사."},
+        {q:"I bought a book. ___ book was expensive.", options:["A","An","The","(no article)"], answer:2, explain:"이미 언급된 대상 → the."}
+      ]}
+  ],
+  B1:[
+    {title:"조건문 (1st & 2nd Conditional)", explain:"1형식(현실적 미래): If + 현재, will + 동사원형. 2형식(가정/비현실): If + 과거, would + 동사원형.",
+      qs:[
+        {q:"If it rains tomorrow, we ___ the picnic.", options:["cancel","will cancel","would cancel","cancelled"], answer:1, explain:"1형식: If+현재, will+동사원형."},
+        {q:"If I ___ more time, I would travel more.", options:["have","had","will have","having"], answer:1, explain:"2형식: If+과거."},
+        {q:"If she studies hard, she ___ the exam.", options:["would pass","will pass","passed","pass"], answer:1, explain:"현실적 미래 → will."},
+        {q:"If I were you, I ___ apologize.", options:["will","would","am","was"], answer:1, explain:"2형식 조건문의 주절 → would."},
+        {q:"We will be late if we ___ now.", options:["don't leave","won't leave","didn't leave","not leave"], answer:0, explain:"조건절엔 현재시제 사용."}
+      ]},
+    {title:"수동태 기초", explain:"행위의 대상이 중요할 때 be + p.p. 형태로 씁니다. 시제에 따라 be동사만 바뀝니다 (is made, was made, has been made).",
+      qs:[
+        {q:"The report ___ by the finance team every month.", options:["prepares","is prepared","prepared","preparing"], answer:1, explain:"반복적 사실 + 수동 → is prepared."},
+        {q:"The bridge ___ in 1998.", options:["built","was built","builds","is building"], answer:1, explain:"과거 시점의 수동 → was built."},
+        {q:"New guidelines ___ next week.", options:["will announce","will be announced","announce","are announcing"], answer:1, explain:"미래 수동 → will be announced."},
+        {q:"The results ___ carefully before publication.", options:["review","are reviewed","reviewing","reviews"], answer:1, explain:"현재시제 수동 → are reviewed."},
+        {q:"This model ___ widely since its release.", options:["has used","has been used","used","uses"], answer:1, explain:"현재완료 수동 → has been used."}
+      ]}
+  ],
+  B2:[
+    {title:"간접화법 (Reported Speech)", explain:"직접화법을 간접화법으로 바꿀 때 시제를 한 단계 과거로 이동시킵니다 (present→past, will→would 등).",
+      qs:[
+        {q:"She said, \"I am tired.\" → She said (that) she ___ tired.", options:["is","was","has been","be"], answer:1, explain:"현재 → 과거로 이동."},
+        {q:"He said, \"I will call you.\" → He said (that) he ___ call me.", options:["will","would","can","was"], answer:1, explain:"will → would."},
+        {q:"They said, \"We have finished.\" → They said (that) they ___ finished.", options:["have","had","has","were"], answer:1, explain:"현재완료 → 과거완료."},
+        {q:"\"I can help,\" she said. → She said (that) she ___ help.", options:["can","could","will","would"], answer:1, explain:"can → could."},
+        {q:"\"I saw him yesterday,\" he said. → He said (that) he ___ him the day before.", options:["saw","had seen","sees","has seen"], answer:1, explain:"과거 → 과거완료."}
+      ]},
+    {title:"관계대명사절", explain:"who/which/that는 선행사를 수식하는 절을 이끕니다. 콤마가 있는 계속적 용법에는 that을 쓸 수 없습니다.",
+      qs:[
+        {q:"The scientist ___ discovered the vaccine won an award.", options:["which","who","whose","when"], answer:1, explain:"사람 선행사 → who."},
+        {q:"This is the report ___ I mentioned earlier.", options:["who","whose","which","where"], answer:2, explain:"사물 선행사 → which."},
+        {q:"The company, ___ profits doubled last year, is expanding.", options:["that","which","whose","who"], answer:2, explain:"소유 관계 → whose."},
+        {q:"Paris, ___ is the capital of France, attracts many tourists.", options:["that","which","who","whose"], answer:1, explain:"계속적 용법(콤마) → that 불가, which 사용."},
+        {q:"The reason ___ she left is still unclear.", options:["why","which","who","whose"], answer:0, explain:"이유를 나타내는 선행사 → why."}
+      ]}
+  ],
+  C1:[
+    {title:"도치구문 (Inversion)", explain:"부정어(Never, Rarely, Not only 등)가 문장 앞에 오면 주어-동사가 도치됩니다. 격식체 글쓰기에서 강조 효과를 냅니다.",
+      qs:[
+        {q:"Never ___ such a rapid change in the market.", options:["we have seen","have we seen","we saw","did we saw"], answer:1, explain:"Never로 시작 → 조동사-주어 도치."},
+        {q:"Not only ___ late, but he also forgot the documents.", options:["he was","was he","he is","is he"], answer:1, explain:"Not only 도치 → was he."},
+        {q:"Rarely ___ such dedication among new employees.", options:["we witness","do we witness","we witnessed","did we witnessed"], answer:1, explain:"Rarely 도치 → do we witness."},
+        {q:"Under no circumstances ___ the door be left unlocked.", options:["should","we should","it should","the door should"], answer:0, explain:"Under no circumstances 도치 → should + 주어."},
+        {q:"Only after the meeting ___ the real issue.", options:["we understood","did we understand","we did understand","understood we"], answer:1, explain:"Only after 도치 → did we understand."}
+      ]},
+    {title:"가정법 &amp; 혼합 조건문", explain:"과거 사실의 반대는 3형식(If + had p.p., would have p.p.), 과거 원인이 현재 결과에 영향을 줄 땐 혼합 조건문(If + had p.p., would + 동사원형)을 씁니다.",
+      qs:[
+        {q:"If she had studied harder, she ___ the exam.", options:["would pass","would have passed","passed","will pass"], answer:1, explain:"3형식: would have p.p."},
+        {q:"If I had taken that job, I ___ in Seoul now.", options:["would live","would have lived","lived","live"], answer:0, explain:"혼합 조건문: 과거 원인→현재 결과, would+동사원형."},
+        {q:"Had they left earlier, they ___ the flight.", options:["would catch","would have caught","caught","catch"], answer:1, explain:"If 생략 도치형 3형식."},
+        {q:"I wish I ___ more time to prepare.", options:["have","had","had had","would have"], answer:2, explain:"과거 사실에 대한 아쉬움 → had had (had + p.p.)."},
+        {q:"If he weren't so busy, he ___ join us tonight.", options:["would","will","would have","had"], answer:0, explain:"2형식 가정법의 주절 → would + 동사원형."}
+      ]}
+  ]
+};
+
+/* ---------- READING ---------- */
+const READING_MCQ = [
+  {level:"A2", title:"A Neighborhood Library", passage:"The city opened a new library in the Green Hill neighborhood last spring. Unlike older branches, this library has a children's play area, free wifi, and a small café. Residents say the building has become a popular meeting place, especially on weekends. The library also runs free English classes for adults twice a week, which have proven very popular among newcomers to the area.",
+    qs:[
+      {q:"When did the new library open?", options:["Last winter","Last spring","Last summer","Two years ago"], answer:1, explain:"본문 첫 문장 'last spring'."},
+      {q:"What is NOT mentioned as a feature of the library?", options:["A café","Free wifi","A children's play area","A parking garage"], answer:3, explain:"주차장은 언급되지 않음."},
+      {q:"Who mainly benefits from the free English classes?", options:["Local children","Newcomers to the area","Library staff","University students"], answer:1, explain:"본문 마지막 문장 참고."}
+    ]},
+  {level:"B1", title:"The Rise of Remote Work", passage:"Over the past decade, remote work has shifted from a rare privilege to a mainstream expectation for many office workers. Companies that once required staff to be present five days a week now offer hybrid arrangements, allowing employees to split their time between home and the office. Supporters argue that this flexibility improves productivity and reduces commuting stress, while critics worry that it weakens team collaboration and makes it harder for new employees to learn company culture. Many organizations are now experimenting with policies that try to balance these competing concerns, such as mandatory in-office days for team meetings.",
+    qs:[
+      {q:"According to the passage, what has changed about remote work?", options:["It has disappeared entirely","It has become more common","It is now illegal in most companies","It is only for senior staff"], answer:1, explain:"본문 첫 문장."},
+      {q:"What concern do critics raise about remote work?", options:["It increases commuting time","It reduces employee pay","It weakens team collaboration","It requires more office space"], answer:2, explain:"critics 관련 문장 참고."},
+      {q:"What solution do some organizations try?", options:["Banning remote work completely","Mandatory in-office days for meetings","Reducing salaries for remote staff","Hiring only local employees"], answer:1, explain:"마지막 문장."}
+    ]},
+  {level:"B2", title:"Urban Green Spaces and Public Health", passage:"A growing body of research links access to urban green spaces with measurable improvements in public health. Studies conducted in several major cities have found that residents living near parks report lower stress levels and higher rates of physical activity compared with those in areas with limited greenery. Some researchers argue that the benefits extend beyond exercise: simply viewing natural scenery has been shown to reduce cortisol levels, a hormone associated with stress. However, critics caution that correlation does not necessarily imply causation, noting that wealthier neighborhoods tend to have both more green space and better health outcomes for unrelated economic reasons. Disentangling these factors remains a key challenge for urban planners seeking evidence-based policy.",
+    qs:[
+      {q:"What is the main idea of the passage?", options:["Green spaces have no effect on health","Access to green spaces may be linked to better public health, though the evidence has limits","All cities should ban private gardens","Exercise is the only benefit of parks"], answer:1, explain:"전체 요지."},
+      {q:"What do critics point out?", options:["Green spaces are too expensive to build","Wealthier areas may have both more greenery and better health for other reasons","Parks increase stress levels","Cortisol has no connection to stress"], answer:1, explain:"critics 문장 참고."},
+      {q:"What does 'disentangling these factors' mean in context?", options:["Removing all parks from cities","Separating the true causes of the health differences","Increasing funding for research","Ignoring economic differences"], answer:1, explain:"문맥상 원인 규명."}
+    ]},
+  {level:"C1", title:"Automation and the Future of Skilled Labor", passage:"The conventional narrative surrounding automation has long held that routine, low-skill tasks are most vulnerable to displacement, while occupations requiring judgment, creativity, or interpersonal nuance remain comparatively insulated. Recent advances, however, complicate this assumption. Generative systems now perform tasks once considered the exclusive domain of skilled professionals, from drafting legal contracts to producing preliminary medical diagnoses. This does not necessarily portend the wholesale obsolescence of such professions; rather, it suggests a reconfiguration of labor, wherein practitioners increasingly function as evaluators and editors of machine-generated output rather than sole originators of it. Whether this shift ultimately augments productivity or erodes the depth of expertise developed through years of unmediated practice remains an open, and contentious, empirical question.",
+    qs:[
+      {q:"What is the author's main argument?", options:["Automation only affects low-skill jobs","Recent technology challenges the assumption that skilled work is safe from automation","Skilled professionals will disappear entirely","Automation has had no real effect on labor"], answer:1, explain:"핵심 주장."},
+      {q:"According to the passage, how might practitioners' roles change?", options:["They will stop working entirely","They may shift toward evaluating and editing machine-generated work","They will only do manual labor","They will train the machines exclusively"], answer:1, explain:"reconfiguration 관련 문장."},
+      {q:"What does the author suggest about the long-term effect of this shift?", options:["It is clearly positive","It is clearly negative","It remains an open and debated question","It has already been proven harmful"], answer:2, explain:"마지막 문장."}
+    ]}
+];
+
+const READING_REORDER = [
+  {level:"B1", title:"How Coffee Reached Europe",
+    sentences:[
+      "Coffee is believed to have originated in the highlands of Ethiopia, where local legend credits a goat herder with discovering its effects.",
+      "From there, cultivation and trade of the plant spread to the Arabian Peninsula, where coffeehouses became centers of social life.",
+      "European travelers encountered these coffeehouses during trade visits and brought both the beans and the custom of drinking coffee back home.",
+      "By the seventeenth century, coffeehouses had opened across major European cities, quickly becoming popular meeting places for merchants and intellectuals."
+    ]},
+  {level:"B2", title:"The Spread of an Invasive Species",
+    sentences:[
+      "Zebra mussels were first identified in the Great Lakes region in the late 1980s, likely introduced via the ballast water of cargo ships.",
+      "Because they lacked natural predators in their new environment, the mussels reproduced at an alarming rate.",
+      "Their rapid spread clogged water intake pipes, forcing municipalities to spend millions of dollars on cleanup and prevention.",
+      "Researchers now monitor waterways closely, hoping to prevent similar introductions of other invasive species in the future."
+    ]}
+];
+
+const READING_FILLBLANK = [
+  {level:"B2", title:"Cloud Computing", text:"Cloud computing allows businesses to {b1} computing resources over the internet rather than {b2} physical servers on site. This model can significantly {b3} costs, since companies pay only for the capacity they actually use.",
+    blanks:[
+      {options:["access","escape","forget"], answer:0},
+      {options:["maintaining","losing","selling"], answer:0},
+      {options:["increase","reduce","ignore"], answer:1}
+    ]},
+  {level:"C1", title:"Behavioral Economics", text:"Traditional economic models often {b1} that individuals act as fully rational agents, carefully weighing costs and benefits before every decision. Behavioral economics {b2} this view, drawing on psychology to show that cognitive biases frequently {b3} judgment, leading people to make choices that deviate from strict rationality.",
+    blanks:[
+      {options:["assume","forbid","measure"], answer:0},
+      {options:["confirms","challenges","ignores"], answer:1},
+      {options:["clarify","distort","record"], answer:1}
+    ]}
+];
+
+/* ---------- LISTENING (text scripts, spoken via TTS) ---------- */
+const DICTATION = {
+  A2:["The store closes at eight o'clock every evening.","She usually walks to work when the weather is nice."],
+  B1:["Several factors contributed to the delay in the project's completion.","The committee will review all applications by the end of next week."],
+  B2:["Despite the rising costs, demand for the product has continued to grow steadily.","Researchers were surprised by how quickly the population adapted to the change."],
+  C1:["Notwithstanding early setbacks, the initiative ultimately achieved its intended outcome.","The findings, though preliminary, suggest a far more complex relationship than previously assumed."]
+};
+
+const LISTEN_FILLBLANK = [
+  {level:"B1", text:"The museum will be {b1} for renovations starting next {b2}, and is expected to {b3} in early autumn.", blanks:["closed","month","reopen"]},
+  {level:"B2", text:"Analysts {b1} that consumer spending will {b2} modestly this quarter, driven largely by {b3} in the technology sector.", blanks:["predict","increase","growth"]}
+];
+
+const LECTURES = [
+  {level:"B1", title:"Urban Bees", text:"In recent years, more cities have started encouraging residents to keep beehives on rooftops and in community gardens. Supporters say urban beekeeping helps pollinate local plants and raises public awareness about declining bee populations. However, some experts warn that too many hives in a small area can actually increase competition for limited flowers, which may harm wild native bee species rather than help them. City planners are now working with beekeeping groups to set guidelines on hive density in shared urban spaces."},
+  {level:"C1", title:"The Economics of Attention", text:"Digital platforms increasingly compete not for consumers' money directly, but for a scarcer resource: their attention. This shift has given rise to what some economists term the attention economy, in which engagement metrics such as time spent on an app become the primary currency of value. Critics argue that optimizing for engagement can incentivize design choices that exploit psychological vulnerabilities, prioritizing short-term stimulation over long-term user wellbeing. Proponents counter that attention-based models simply reflect consumer preference, and that regulation risks paternalistically overriding individual choice. The debate raises unresolved questions about how much responsibility platforms bear for the habits their designs encourage."}
+];
+
+const SHORT_QA = [
+  {level:"A2", q:"What do we call a person who teaches students?", a:"A teacher"},
+  {level:"A2", q:"If today is Monday, what day is tomorrow?", a:"Tuesday"},
+  {level:"B1", q:"What word means the opposite of 'expensive'?", a:"Cheap / inexpensive"},
+  {level:"B1", q:"What do you call the place where you can borrow books?", a:"A library"},
+  {level:"B2", q:"What is the term for money paid regularly for the use of property?", a:"Rent"},
+  {level:"B2", q:"What do we call a doctor who treats teeth?", a:"A dentist"},
+  {level:"C1", q:"What term describes an argument that seems logical but is actually flawed?", a:"A fallacy"},
+  {level:"C1", q:"What word describes a decision made without enough evidence?", a:"Premature / unfounded"}
+];
+
+const LISTEN_MCQ = [
+  {level:"A2", text:"Tom usually takes the bus to school, but this morning it was raining heavily, so his mother decided to drive him instead.", q:"Why did Tom's mother drive him to school?", options:["The bus was late","It was raining heavily","Tom missed the bus","The school was closed"], answer:1, explain:"본문에서 비가 많이 와서 라고 언급."},
+  {level:"B1", text:"Although the new policy was intended to reduce traffic congestion, early data suggests that it has had little measurable effect during peak hours.", q:"What does the early data suggest about the new policy?", options:["It eliminated congestion completely","It had little measurable effect","It made traffic much worse","It was cancelled immediately"], answer:1, explain:"early data suggests little effect."},
+  {level:"B2", text:"While many assume that multitasking improves efficiency, several studies indicate that switching between tasks frequently actually increases the time needed to complete each one.", q:"What do the studies referenced in the passage indicate?", options:["Multitasking improves efficiency","Switching tasks increases completion time","People should multitask more","Task switching has no effect"], answer:1, explain:"studies indicate switching increases time needed."},
+  {level:"C1", title:"", text:"Although proponents of the merger emphasize projected cost savings, several independent analysts contend that these estimates rest on overly optimistic assumptions about integration timelines.", q:"What is the analysts' main criticism of the merger's projected savings?", options:["The savings are guaranteed","The estimates rely on unrealistic integration timelines","The merger will fail immediately","There are no cost savings at all"], answer:1, explain:"analysts contend estimates rest on optimistic assumptions."}
+];
+
+/* ---------- SPEAKING ---------- */
+const READ_ALOUD = {
+  A2:"Every morning, Sarah walks her dog in the park near her home before going to work. She enjoys the quiet time outdoors and says it helps her start the day feeling calm.",
+  B1:"Public transportation systems in many cities are being redesigned to reduce carbon emissions. City officials hope that by adding more electric buses, they can encourage residents to leave their cars at home.",
+  B2:"The committee's decision to postpone the vote reflects growing uncertainty among members about the long-term financial implications of the proposal, despite broad agreement on its underlying goals.",
+  C1:"Notwithstanding the considerable investment already committed to the initiative, several stakeholders have begun to question whether its projected benefits sufficiently justify the accompanying risks and operational disruption."
+};
+
+const DESCRIBE_IMAGE = [
+  {level:"A2", title:"주간 커피숍 방문객 (막대그래프)", type:"bar",
+    data:[["Mon",40],["Tue",55],["Wed",50],["Thu",65],["Fri",90],["Sat",120],["Sun",100]], unit:"명"},
+  {level:"B2", title:"분기별 온라인 매출 성장률 (선그래프)", type:"line",
+    data:[["Q1",2.1],["Q2",3.4],["Q3",3.0],["Q4",5.8]], unit:"% 성장"},
+  {level:"C1", title:"에너지원별 발전 비중 (파이차트)", type:"pie",
+    data:[["Coal",28],["Gas",22],["Renewables",35],["Nuclear",15]], unit:"%"}
+];
+
+const SITUATIONS = [
+  {level:"A2", text:"You are at a café and the waiter brought you the wrong order. Speak to the waiter."},
+  {level:"B1", text:"Your flight has been delayed by three hours. Call the airline and ask about your options."},
+  {level:"B2", text:"A colleague asks you to cover their shift on a day you already have plans. Respond to them."},
+  {level:"C1", text:"You need to persuade your manager to approve a budget increase for your team despite recent company-wide cost cuts."}
+];
+
+const GROUP_DISCUSSION = [
+  {level:"B2", title:"Should university be free?", text:"Speaker A: I think university education should be free because it gives everyone an equal chance regardless of income. Speaker B: I disagree — free tuition could reduce funding quality, since universities would rely entirely on government budgets. Speaker C: Maybe a middle ground, like income-based repayment, would balance access and funding. Speaker A: That's fair, but it still leaves some students with long-term debt."},
+  {level:"C1", title:"Is remote work sustainable long-term?", text:"Speaker A: Remote work clearly boosts individual productivity and reduces commuting costs, so companies should embrace it permanently. Speaker B: I'd push back — over time, weaker in-person collaboration can quietly erode innovation and mentorship for junior staff. Speaker C: Perhaps the answer isn't all-or-nothing; a structured hybrid model could preserve flexibility while protecting team cohesion. Speaker A: Agreed, though implementation would need to vary significantly by industry and role."}
+];
+
+/* ---------- WRITING ---------- */
+const SWT_PASSAGES = [
+  {level:"B1", text:"Electric vehicles are becoming more common as battery prices continue to fall and governments introduce incentives for buyers. However, widespread adoption still faces obstacles, including limited charging infrastructure in rural areas and concerns about the environmental impact of battery production. Industry experts predict that these challenges will gradually ease as technology improves and more manufacturers enter the market, though the pace of change is likely to vary significantly between countries depending on local policy support."},
+  {level:"B2", text:"The gig economy, characterized by short-term contracts and freelance work facilitated through digital platforms, has expanded rapidly over the past decade. Proponents highlight the flexibility it offers workers who value autonomy over traditional employment structures. Critics, however, point to the lack of job security, benefits, and consistent income associated with gig work, arguing that platform companies often shift financial risk onto individual workers. Policymakers in several countries are now debating how to classify gig workers in ways that balance flexibility with adequate protections."}
+];
+
+const ESSAY_PROMPTS = [
+  {level:"B1", prompt:"Some people think technology has made our lives easier, while others believe it has made life more complicated. Discuss both views and give your own opinion."},
+  {level:"B2", prompt:"Many universities now offer online degree programs. Do the advantages of online education outweigh the disadvantages? Support your answer with reasons and examples."},
+  {level:"B2", prompt:"Some believe that governments should invest more in public transportation rather than building new roads. To what extent do you agree or disagree?"},
+  {level:"C1", prompt:"As artificial intelligence becomes more capable, some argue that certain professions will need entirely new forms of regulation. Discuss the potential benefits and risks of regulating AI-assisted professions."},
+  {level:"C1", prompt:"\"Economic growth should not come at the expense of environmental sustainability.\" To what extent do you agree with this statement? Support your view with specific examples."}
+];
+
+/* ============================================================
+   DIAGNOSTIC TEST
+   ============================================================ */
+// Correct-answer position is deliberately rotated 0,1,2,3,0,1,2,3,... across the
+// 20 items (5 questions land on each option slot) so the test can't be gamed by
+// pattern-guessing a favored option index — an earlier version happened to put
+// the correct answer in slot 2 (the "b" option) on 60% of questions.
+const DIAGNOSTIC = [
+  {level:"A2", q:"Choose the correct word: She ___ to the gym every morning.", options:["goes","go","going","gone"], answer:0},
+  {level:"A2", q:"What is the opposite of 'difficult'?", options:["hard","easy","slow","heavy"], answer:1},
+  {level:"A2", q:"Choose the correct sentence.", options:["He don't like coffee.","He doesn't likes coffee.","He doesn't like coffee.","He not like coffee."], answer:2},
+  {level:"A2", q:"I ___ my homework before dinner yesterday.", options:["finish","have finished","finishing","finished"], answer:3},
+  {level:"A2", q:"Which word best completes: 'Could you ___ me the salt, please?'", options:["pass","passing","passed","to pass"], answer:0},
+  {level:"B1", q:"Choose the best synonym for 'benefit' (as a verb).", options:["harm","gain from","ignore","reduce"], answer:1},
+  {level:"B1", q:"If it rains tomorrow, we ___ the match.", options:["cancel","would cancel","will cancel","cancelling"], answer:2},
+  {level:"B1", q:"The report ___ by the team next week.", options:["will finish","finishes","is finishing","will be finished"], answer:3},
+  {level:"B1", q:"Which word means 'a reason or cause'?", options:["factor","fiction","fragment","fixture"], answer:0},
+  {level:"B1", q:"She said (that) she ___ tired after the long flight.", options:["is","was","has been","be"], answer:1},
+  {level:"B2", q:"Choose the closest meaning to 'inevitable'.", options:["avoidable","unlikely","certain to happen","surprising"], answer:2},
+  {level:"B2", q:"This is the researcher ___ work changed the field.", options:["who","which","that","whose"], answer:3},
+  {level:"B2", q:"The company's profits ___ significantly since the merger.", options:["have increased","increased since","are increasing since","increase"], answer:0},
+  {level:"B2", q:"Choose the best word: The two reports show a clear ___ in their conclusions.", options:["harmony","discrepancy","similarity","agreement"], answer:1},
+  {level:"B2", q:"It is not economically ___ to open a new branch this year.", options:["inevitable","comprehensive","feasible","relevant"], answer:2},
+  {level:"C1", q:"Choose the correct inversion: Never ___ such enthusiasm among the staff.", options:["we have seen","we saw","did we see","have we seen"], answer:3},
+  {level:"C1", q:"Select the closest meaning to 'plausible'.", options:["reasonable/believable","impossible","confusing","forbidden"], answer:0},
+  {level:"C1", q:"If she had left earlier, she ___ the traffic.", options:["would avoid","would have avoided","avoided","avoids"], answer:1},
+  {level:"C1", q:"Choose the best word: His argument, though elegant, lacked ___ evidence.", options:["ambiguous","tangential","empirical","notwithstanding"], answer:2},
+  {level:"C1", q:"Select the closest meaning to 'notwithstanding'.", options:["because of","in addition to","instead of","despite"], answer:3}
+];
+
+function scoreToBand(pct){
+  if(pct>=85) return {level:'C2', range:[85,90]};
+  if(pct>=76) return {level:'C1', range:[76,84]};
+  if(pct>=59) return {level:'B2', range:[59,75]};
+  if(pct>=43) return {level:'B1', range:[43,58]};
+  if(pct>=30) return {level:'A2', range:[30,42]};
+  return {level:'A1', range:[10,29]};
+}
+
+function renderDiagnostic(){
+  const host = document.getElementById('diagnosticHost');
+  if(store.diagnosticDone){
+    host.innerHTML = `
+      <div class="card" style="margin-bottom:16px;">
+        <div class="eyebrow">이전 결과</div>
+        <h2 style="margin-bottom:6px;">추정 레벨: ${store.level} <span class="mono" style="font-size:14px; color:var(--ink-500);">(약 ${store.estScore}점)</span></h2>
+        <p class="lede" style="margin-bottom:12px;">다시 진단하고 싶다면 아래 버튼을 눌러 새로 시작하세요.</p>
+        <button class="btn" id="retakeBtn">다시 진단하기</button>
+      </div>`;
+    document.getElementById('retakeBtn').onclick = ()=>{ store.diagnosticDone=false; renderDiagnostic(); };
+    return;
+  }
+  const answers = new Array(DIAGNOSTIC.length).fill(null);
+  let html = `<div class="card" style="margin-bottom:14px;"><div class="progressbar"><i id="diagProg" style="width:0%"></i></div><div style="font-size:12px;color:var(--ink-500);margin-top:6px;" id="diagProgText">0 / ${DIAGNOSTIC.length} 답변</div></div>`;
+  html += `<div id="diagList"></div><button class="btn brass" id="diagSubmit">결과 보기</button><div class="feedback bad" id="diagWarn" style="display:none; margin-top:10px;"></div><div id="diagResult"></div>`;
+  host.innerHTML = html;
+  const list = document.getElementById('diagList');
+  DIAGNOSTIC.forEach((q,i)=>{
+    const wrap=document.createElement('div'); wrap.className='qcard';
+    wrap.innerHTML = `<span class="pill ${q.level.toLowerCase()}" style="margin-bottom:8px;">${q.level}</span>
+      <div class="qtext">${i+1}. ${q.q}</div>` +
+      q.options.map((o,oi)=>`<div class="opt" data-i="${oi}">${o}</div>`).join('');
+    list.appendChild(wrap);
+    wrap.querySelectorAll('.opt').forEach(o=>{
+      o.addEventListener('click', ()=>{
+        answers[i]=+o.dataset.i;
+        wrap.querySelectorAll('.opt').forEach(x=>x.classList.remove('selected'));
+        o.classList.add('selected');
+        const answeredCount = answers.filter(a=>a!==null).length;
+        document.getElementById('diagProg').style.width = (answeredCount/DIAGNOSTIC.length*100)+'%';
+        document.getElementById('diagProgText').textContent = answeredCount+' / '+DIAGNOSTIC.length+' 답변';
+      });
+    });
+  });
+  // The submit button is always clickable — we validate completeness at click time
+  // instead of relying on a `disabled` attribute, so a stray timing/state issue can
+  // never leave the button permanently unresponsive.
+  document.getElementById('diagSubmit').addEventListener('click', ()=>{
+    const warn = document.getElementById('diagWarn');
+    const unanswered = answers.map((a,i)=>a===null?i+1:null).filter(x=>x!==null);
+    if(unanswered.length>0){
+      warn.style.display='block';
+      warn.textContent = `아직 ${unanswered.length}개 문항에 답하지 않았어요 (${unanswered.slice(0,8).join(', ')}${unanswered.length>8?' 등':''}번). 위 문항을 마저 선택한 뒤 다시 눌러주세요.`;
+      const firstUnanswered = list.children[unanswered[0]-1];
+      if(firstUnanswered) firstUnanswered.scrollIntoView({block:'center'});
+      return;
+    }
+    warn.style.display='none';
+    const byLevel = {A2:{c:0,t:0},B1:{c:0,t:0},B2:{c:0,t:0},C1:{c:0,t:0}};
+    let totalCorrect=0;
+    DIAGNOSTIC.forEach((q,i)=>{
+      byLevel[q.level].t++;
+      if(answers[i]===q.answer){ byLevel[q.level].c++; totalCorrect++; }
+    });
+    // Determine highest level tier passed at >=60%
+    let estLevel='A2';
+    LEVELS.forEach(lv=>{
+      const b=byLevel[lv];
+      if(b.t>0 && (b.c/b.t) >= 0.6) estLevel = lv;
+    });
+    const weighted = byLevel.A2.c*1 + byLevel.B1.c*2 + byLevel.B2.c*3 + byLevel.C1.c*4;
+    const maxWeighted = byLevel.A2.t*1 + byLevel.B1.t*2 + byLevel.B2.t*3 + byLevel.C1.t*4;
+    const wpct = weighted/maxWeighted*100;
+    const band = scoreToBand(wpct);
+    const estScore = Math.round(band.range[0] + (band.range[1]-band.range[0]) * 0.5);
+
+    store.level = estLevel;
+    store.estScore = estScore;
+    store.diagnosticDone = true;
+    saveStore();
+
+    const resHost = document.getElementById('diagResult');
+    resHost.innerHTML = `
+      <div class="card" style="margin-top:16px;">
+        <div class="eyebrow">진단 결과</div>
+        <h2>맞은 문제: ${totalCorrect} / ${DIAGNOSTIC.length} · 추정 레벨 <span class="pill ${estLevel.toLowerCase()}">${estLevel}</span></h2>
+        <p>참고용 예상 PTE 점수대: <span class="mono" style="font-weight:600;">약 ${estScore}점</span> (${band.level} 밴드)</p>
+        <div class="grid g4" style="margin:14px 0;">
+          ${LEVELS.map(lv=>`<div class="stat card flat" style="text-align:center;"><div class="num">${byLevel[lv].c}/${byLevel[lv].t}</div><div class="lbl">${lv} 정답</div></div>`).join('')}
+        </div>
+        <p class="lede">${diagAdvice(estLevel)}</p>
+        <button class="btn" id="diagGoDashboard">대시보드에서 학습 계획 보기</button>
+      </div>`;
+    document.getElementById('diagSubmit').style.display='none';
+    document.getElementById('diagGoDashboard').addEventListener('click', ()=> showView('dashboard'));
+    renderSidebarLevel();
+    renderDashboard();
+    // Re-open Vocabulary/Grammar so their level tabs default to the just-diagnosed level
+    renderVocabView();
+    renderGrammarView();
+  });
+}
+function diagAdvice(lv){
+  const map = {
+    A2:"기초 어휘와 시제/관사 같은 핵심 문법부터 다집니다. Vocabulary·Grammar의 A2 탭과 Read Aloud, Answer Short Question 위주로 시작하세요.",
+    B1:"기본기는 갖췄습니다. 조건문·수동태·간접화법을 정리하고, Reading MCQ와 Listening Summarize/Dictation으로 정보 처리 속도를 올리세요.",
+    B2:"실전 문항 유형(Reorder Paragraph, Describe Image, Retell Lecture 등)에 집중할 단계입니다. Write Essay 템플릿을 만들어 20분 타이머 안에 완성하는 연습을 반복하세요.",
+    C1:"세부 정확도(철자, 도치구문, 콜로케이션)와 속도가 관건입니다. C1 어휘·문법을 점검하고, 고난도 Listening(Highlight Incorrect Words)·Speaking(Summarize Group Discussion)으로 실전 감각을 유지하세요."
+  };
+  return map[lv]||"";
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderSidebarLevel(){
+  document.getElementById('sidebarLevel').textContent = store.level || '미진단';
+  document.getElementById('sidebarScore').textContent = store.estScore ? ('약 '+store.estScore+'점 (10–90)') : '진단테스트를 시작해보세요';
+}
+
+function renderDashboard(){
+  const stats = document.getElementById('dashStats');
+  const s = store.skills;
+  stats.innerHTML = `
+    <div class="card stat"><div class="num mono">${s.vocab.done}</div><div class="lbl">어휘 퀴즈 완료</div></div>
+    <div class="card stat"><div class="num mono">${s.grammar.done}</div><div class="lbl">문법 문제 완료</div></div>
+    <div class="card stat"><div class="num mono">${s.reading.done}</div><div class="lbl">독해 문제 완료</div></div>
+    <div class="card stat"><div class="num mono">${s.listening.done}</div><div class="lbl">리스닝 문제 완료</div></div>
+  `;
+  const plan = document.getElementById('planBox');
+  if(!store.level){
+    plan.innerHTML = `<p style="color:var(--ink-500); font-size:13.5px;">아직 진단테스트를 하지 않았습니다. 먼저 <a href="#" id="goDiag">레벨 진단테스트</a>를 완료하면 맞춤 계획이 표시됩니다.</p>`;
+    document.getElementById('goDiag').onclick=(e)=>{e.preventDefault(); showView('diagnostic');};
+  } else {
+    const weekly = {
+      A2:["월·수·금: 어휘 A2 15개 + 퀴즈","화·목: 문법 A2 두 토픽","매일 10분: Read Aloud A2 지문 3개 소리내어 읽기","주말: Listening Dictation A2로 받아쓰기"],
+      B1:["월·수·금: 어휘 B1 + Reading MCQ 1개","화·목: 문법 B1 (조건문/수동태) + Listening Fill in Blanks","매일: Speaking Read Aloud B1 + Answer Short Question","주말: Writing Summarize Written Text 1회, 타이머 10분"],
+      B2:["월·화: Reading Reorder Paragraph + Fill in Blanks","수·목: Listening Summarize Spoken Text + Describe Image","금: Write Essay 1편 (20분 타이머)","주말: 어휘·문법 B2 복습 + Speaking Retell Lecture"],
+      C1:["월·화: Listening Highlight Incorrect Words + Write from Dictation","수·목: Speaking Summarize Group Discussion + Respond to a Situation","금: Write Essay C1 프롬프트 (20분, 300단어 목표)","주말: 어휘·문법 C1 오답 복습 + Reading C1 지문 정독"]
+    };
+    plan.innerHTML = `<p style="font-size:12px; color:var(--ink-500); margin-bottom:8px;">추정 레벨 ${store.level} 기준 추천 루틴</p><ul style="margin:0; padding-left:18px; font-size:13.5px; line-height:1.9;">${weekly[store.level].map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  }
+
+  const sp = document.getElementById('skillProgress');
+  const items = [
+    ["Vocabulary", s.vocab.done+' 퀴즈'],
+    ["Grammar", s.grammar.done+' 문제'],
+    ["Reading", s.reading.done+' 문제'],
+    ["Listening", s.listening.done+' 문제'],
+    ["Speaking", s.speaking.done+' 세션'],
+    ["Writing", s.writing.done+' 세션']
+  ];
+  sp.innerHTML = items.map(([name,val])=>{
+    const n = parseInt(val)||0;
+    const pct = Math.min(100, n*8);
+    return `<div class="card"><div style="font-weight:600; font-size:13.5px; margin-bottom:6px;">${name}</div><div class="progressbar"><i style="width:${pct}%"></i></div><div style="font-size:11.5px; color:var(--ink-500); margin-top:6px;">${val}</div></div>`;
+  }).join('');
+}
+
+/* ============================================================
+   OVERVIEW VIEW
+   ============================================================ */
+function renderOverview(){
+  const tabHost=document.getElementById('ovTabs'), host=document.getElementById('ovHost');
+  const sections = Object.keys(OVERVIEW);
+  buildTabs(tabHost, host, sections.map(s=>({label:s, key:s})), (tab,el)=>{
+    const sec = OVERVIEW[tab.key];
+    el.innerHTML = `<p style="color:var(--ink-500); font-size:13px; margin-bottom:14px;"><span class="mono">${sec.time}</span> — ${sec.intro}</p>`;
+    sec.items.forEach(it=>{
+      const div=document.createElement('div'); div.className='strategy-item';
+      div.innerHTML = `<div class="k">${it.time} · ${it.scored}</div><div style="font-weight:600; margin:2px 0 4px;">${it.name}</div><div style="font-size:13.5px; color:var(--ink-700);">${it.tip}</div>`;
+      el.appendChild(div);
+    });
+  });
+}
+
+/* ============================================================
+   VOCAB VIEW
+   ============================================================ */
+function renderVocabView(){
+  const tabHost=document.getElementById('vocTabs'), host=document.getElementById('vocHost');
+  const recommendedIdx = store.diagnosticDone ? LEVELS.indexOf(store.level) : -1;
+  buildTabs(tabHost, host, LEVELS.map((l,i)=>({label:l+' · '+LEVEL_LABEL[l]+(i===recommendedIdx?' (내 레벨)':''), key:l})), (tab,el)=>{
+    const words = VOCAB[tab.key];
+    const grid=document.createElement('div'); grid.className='grid g3';
+    words.forEach(w=>{
+      const c=document.createElement('div'); c.className='flashcard';
+      let flipped=false;
+      function render(){
+        c.innerHTML = flipped
+          ? `<div class="pos">${w.p}</div><div class="term" style="font-size:18px;">${w.d}</div><div class="hint">"${w.e}"</div>`
+          : `<div class="pos">${w.p}</div><div class="term">${w.t}</div><div class="hint">클릭해서 뜻 보기</div>`;
+      }
+      c.addEventListener('click', ()=>{ flipped=!flipped; render(); });
+      render();
+      grid.appendChild(c);
+    });
+    el.appendChild(grid);
+
+    const quizBtn=document.createElement('button');
+    quizBtn.className='btn brass'; quizBtn.style.marginTop='18px'; quizBtn.textContent=tab.key+' 어휘 퀴즈 시작 (10문항)';
+    const quizHost=document.createElement('div'); quizHost.style.marginTop='14px';
+    quizBtn.onclick=()=>{ quizHost.innerHTML=''; buildVocabQuiz(quizHost, words, tab.key); };
+    el.appendChild(quizBtn);
+    el.appendChild(quizHost);
+  }, recommendedIdx);
+}
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function buildVocabQuiz(host, words, level){
+  const pool = shuffle(words).slice(0, Math.min(10, words.length));
+  let correct=0, answeredCount=0;
+  const resultEl=document.createElement('div');
+  pool.forEach((w,idx)=>{
+    const distractors = shuffle(words.filter(x=>x.t!==w.t)).slice(0,3).map(x=>x.d);
+    const options = shuffle([w.d, ...distractors]);
+    const answer = options.indexOf(w.d);
+    renderMCQ(host, {q:`'${w.t}'의 뜻은?`, options, answer, explain:w.e}, idx, (ok)=>{
+      answeredCount++; if(ok) correct++;
+      if(answeredCount===pool.length){
+        resultEl.className='feedback good';
+        resultEl.style.display='block';
+        resultEl.textContent = `퀴즈 완료: ${correct} / ${pool.length} 정답`;
+        host.appendChild(resultEl);
+        bump('vocab');
+      }
+    });
+  });
+}
+
+/* ============================================================
+   GRAMMAR VIEW
+   ============================================================ */
+function renderGrammarView(){
+  const tabHost=document.getElementById('gramTabs'), host=document.getElementById('gramHost');
+  const recommendedIdx = store.diagnosticDone ? LEVELS.indexOf(store.level) : -1;
+  buildTabs(tabHost, host, LEVELS.map((l,i)=>({label:l+(i===recommendedIdx?' (내 레벨)':''), key:l})), (tab,el)=>{
+    GRAMMAR[tab.key].forEach(topic=>{
+      const card=document.createElement('div'); card.className='card'; card.style.marginBottom='16px';
+      card.innerHTML = `<h3 style="font-size:15.5px;">${topic.title}</h3><p style="font-size:13.5px; color:var(--ink-700);">${topic.explain}</p>`;
+      const qHost=document.createElement('div');
+      topic.qs.forEach((q,i)=> renderMCQ(qHost, q, i, (ok)=>{ if(ok) bump('grammar'); else bump('grammar'); }));
+      card.appendChild(qHost);
+      el.appendChild(card);
+    });
+  }, recommendedIdx);
+}
+
+/* ============================================================
+   READING VIEW
+   ============================================================ */
+function renderReadingView(){
+  const tabHost=document.getElementById('reTabs'), host=document.getElementById('reHost');
+  const tabs=[{label:'지문 이해 (MCQ)',key:'mcq'},{label:'문단 재배열',key:'reorder'},{label:'빈칸 채우기',key:'fillblank'}];
+  buildTabs(tabHost, host, tabs, (tab, el)=>{
+    if(tab.key==='mcq'){
+      READING_MCQ.forEach(p=>{
+        const wrap=document.createElement('div');
+        wrap.innerHTML = `<span class="pill ${p.level.toLowerCase()}">${p.level}</span> <b style="margin-left:6px;">${p.title}</b>`;
+        const pas=document.createElement('div'); pas.className='passage'; pas.textContent=p.passage;
+        wrap.appendChild(pas);
+        const qHost=document.createElement('div');
+        p.qs.forEach((q,i)=>renderMCQ(qHost,q,i,(ok)=>bump('reading')));
+        wrap.appendChild(qHost);
+        wrap.style.marginBottom='26px';
+        el.appendChild(wrap);
+      });
+    } else if(tab.key==='reorder'){
+      READING_REORDER.forEach(ex=>{
+        const wrap=document.createElement('div'); wrap.style.marginBottom='26px';
+        wrap.innerHTML = `<span class="pill ${ex.level.toLowerCase()}">${ex.level}</span> <b style="margin-left:6px;">${ex.title}</b><p style="font-size:12.5px; color:var(--ink-500);">문장을 드래그하여 논리적인 순서로 배열하세요.</p>`;
+        const list=document.createElement('div');
+        const shuffled = shuffle(ex.sentences);
+        shuffled.forEach((s,i)=>{
+          const it=document.createElement('div'); it.className='reorder-item'; it.draggable=true;
+          it.dataset.text=s;
+          it.innerHTML = `<span class="idx">${i+1}</span><span class="txt">${s}</span>
+            <span class="updown"><button type="button" data-dir="up" aria-label="위로 이동">▲</button><button type="button" data-dir="down" aria-label="아래로 이동">▼</button></span>`;
+          list.appendChild(it);
+        });
+        // Desktop mouse drag-and-drop (native HTML5 DnD does not fire on touch, so mobile uses the ▲▼ buttons below instead)
+        let dragEl=null;
+        list.addEventListener('dragstart', e=>{ dragEl=e.target.closest('.reorder-item'); if(dragEl) dragEl.classList.add('dragging'); });
+        list.addEventListener('dragend', e=>{ if(dragEl) dragEl.classList.remove('dragging'); dragEl=null; reindex(); });
+        list.addEventListener('dragover', e=>{
+          e.preventDefault();
+          const after = [...list.querySelectorAll('.reorder-item:not(.dragging)')].find(el=>{
+            const r=el.getBoundingClientRect(); return e.clientY < r.top + r.height/2;
+          });
+          if(!dragEl) return;
+          if(after) list.insertBefore(dragEl, after); else list.appendChild(dragEl);
+        });
+        // Tap-friendly reordering for touch/mobile
+        list.addEventListener('click', e=>{
+          const btn=e.target.closest('.updown button'); if(!btn) return;
+          const item=btn.closest('.reorder-item');
+          if(btn.dataset.dir==='up'){
+            const prev=item.previousElementSibling; if(prev) list.insertBefore(item, prev);
+          } else {
+            const next=item.nextElementSibling; if(next) list.insertBefore(next, item);
+          }
+          reindex();
+        });
+        function reindex(){
+          const its=[...list.querySelectorAll('.reorder-item')];
+          its.forEach((it,i)=>{
+            it.querySelector('.idx').textContent=i+1;
+            it.querySelector('[data-dir="up"]').disabled = (i===0);
+            it.querySelector('[data-dir="down"]').disabled = (i===its.length-1);
+          });
+        }
+        reindex();
+        const checkBtn=document.createElement('button'); checkBtn.className='btn small'; checkBtn.style.marginTop='8px'; checkBtn.textContent='순서 확인';
+        const fb=document.createElement('div'); fb.className='feedback'; fb.style.display='none';
+        checkBtn.onclick=()=>{
+          const order=[...list.querySelectorAll('.reorder-item')].map(it=>it.dataset.text);
+          const ok = order.every((s,i)=>s===ex.sentences[i]);
+          fb.style.display='block';
+          fb.className='feedback '+(ok?'good':'bad');
+          fb.textContent = ok ? '정답입니다! 문단 순서를 올바르게 배열했어요.' : '아직 정답이 아니에요. 대명사와 연결어를 단서로 다시 시도해보세요.';
+          bump('reading');
+        };
+        wrap.appendChild(list); wrap.appendChild(checkBtn); wrap.appendChild(fb);
+        el.appendChild(wrap);
+      });
+    } else {
+      READING_FILLBLANK.forEach(ex=>{
+        const wrap=document.createElement('div'); wrap.style.marginBottom='26px';
+        wrap.innerHTML = `<span class="pill ${ex.level.toLowerCase()}">${ex.level}</span> <b style="margin-left:6px;">${ex.title}</b>`;
+        const pas=document.createElement('div'); pas.className='passage';
+        let text=ex.text; const selects=[];
+        ex.blanks.forEach((b,i)=>{
+          const id='blank_'+Math.random().toString(36).slice(2);
+          const optHtml = `<select class="blank-select" data-i="${i}" id="${id}"><option value="">--</option>${b.options.map((o,oi)=>`<option value="${oi}">${o}</option>`).join('')}</select>`;
+          text = text.replace('{b'+(i+1)+'}', optHtml);
+        });
+        pas.innerHTML = text;
+        const checkBtn=document.createElement('button'); checkBtn.className='btn small'; checkBtn.style.marginTop='6px'; checkBtn.textContent='채점하기';
+        const fb=document.createElement('div'); fb.className='feedback'; fb.style.display='none';
+        checkBtn.onclick=()=>{
+          let correct=0;
+          pas.querySelectorAll('.blank-select').forEach(sel=>{
+            const i=+sel.dataset.i;
+            if(+sel.value === ex.blanks[i].answer) correct++;
+          });
+          fb.style.display='block';
+          fb.className='feedback '+(correct===ex.blanks.length?'good':'bad');
+          fb.textContent = `${correct} / ${ex.blanks.length} 정답`;
+          bump('reading');
+        };
+        wrap.appendChild(pas); wrap.appendChild(checkBtn); wrap.appendChild(fb);
+        el.appendChild(wrap);
+      });
+    }
+  });
+}
+
+/* ============================================================
+   LISTENING VIEW
+   ============================================================ */
+function renderListeningView(){
+  const tabHost=document.getElementById('liTabs'), host=document.getElementById('liHost');
+  const tabs=[
+    {label:'Write from Dictation',key:'dictation'},
+    {label:'Fill in the Blanks',key:'fillblank'},
+    {label:'Summarize Spoken Text',key:'summarize'},
+    {label:'Answer Short Question',key:'shortq'},
+    {label:'Multiple Choice',key:'mcq'}
+  ];
+  buildTabs(tabHost, host, tabs, (tab, el)=>{
+    if(tab.key==='dictation'){
+      LEVELS.forEach(lv=>{
+        DICTATION[lv].forEach((sent,i)=>{
+          const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='14px';
+          wrap.innerHTML = `<span class="pill ${lv.toLowerCase()}">${lv}</span>
+            <div style="margin:10px 0;"><button class="btn small teal">▶ 문장 듣기 (1회)</button></div>
+            <input type="text" placeholder="들은 문장을 그대로 입력하세요" />
+            <button class="btn small" style="margin-top:8px;">채점</button>
+            <div class="feedback" style="display:none;"></div>`;
+          const playBtn=wrap.querySelector('button.teal');
+          const input=wrap.querySelector('input');
+          const gradeBtn=wrap.querySelectorAll('button')[1];
+          const fb=wrap.querySelector('.feedback');
+          playBtn.onclick=()=>speak(sent, 0.9);
+          gradeBtn.onclick=()=>{
+            const target=sent.toLowerCase().replace(/[.,]/g,'').split(/\s+/);
+            const given=input.value.toLowerCase().replace(/[.,]/g,'').split(/\s+/).filter(Boolean);
+            let matched=0; const t2=[...target];
+            given.forEach(w=>{ const idx=t2.indexOf(w); if(idx>-1){matched++; t2.splice(idx,1);} });
+            const pct=Math.round(matched/target.length*100);
+            fb.style.display='block'; fb.className='feedback '+(pct>=70?'good':'bad');
+            fb.textContent = `단어 일치율 ${pct}% (정답: "${sent}")`;
+            bump('listening');
+          };
+          el.appendChild(wrap);
+        });
+      });
+    } else if(tab.key==='fillblank'){
+      LISTEN_FILLBLANK.forEach(ex=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='14px';
+        let display=ex.text;
+        ex.blanks.forEach((b,i)=>{ display=display.replace('{b'+(i+1)+'}', `<input type="text" data-i="${i}" style="width:110px; display:inline-block;">`); });
+        const fullSentence = ex.text.replace(/\{b\d\}/g, (m)=>{ const i=+m.match(/\d/)[0]-1; return ex.blanks[i]; });
+        wrap.innerHTML = `<span class="pill ${ex.level.toLowerCase()}">${ex.level}</span>
+          <div style="margin:10px 0;"><button class="btn small teal">▶ 문장 듣기 (1회)</button></div>
+          <div class="passage" style="padding:14px;">${display}</div>
+          <button class="btn small">채점</button>
+          <div class="feedback" style="display:none;"></div>`;
+        wrap.querySelector('button.teal').onclick=()=>speak(fullSentence, 0.9);
+        wrap.querySelector('.passage');
+        const grade=wrap.querySelectorAll('button')[1];
+        const fb=wrap.querySelector('.feedback');
+        grade.onclick=()=>{
+          let correct=0;
+          wrap.querySelectorAll('input[type=text]').forEach(inp=>{
+            const i=+inp.dataset.i;
+            if(inp.value.trim().toLowerCase()===ex.blanks[i].toLowerCase()) correct++;
+          });
+          fb.style.display='block'; fb.className='feedback '+(correct===ex.blanks.length?'good':'bad');
+          fb.textContent = `${correct} / ${ex.blanks.length} 정답`;
+          bump('listening');
+        };
+        el.appendChild(wrap);
+      });
+    } else if(tab.key==='summarize'){
+      LECTURES.forEach(lec=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='16px';
+        wrap.innerHTML = `<span class="pill ${lec.level.toLowerCase()}">${lec.level}</span> <b style="margin-left:6px;">${lec.title}</b>
+          <div style="margin:10px 0;"><button class="btn small teal">▶ 강의 듣기 (1회)</button></div>
+          <p style="font-size:11.5px; color:var(--ink-500);">들은 내용을 50–70단어 한 문단으로 요약하세요.</p>
+          <textarea rows="4" placeholder="여기에 요약을 작성하세요..."></textarea>
+          <div class="wordcount">0 단어</div>`;
+        wrap.querySelector('button.teal').onclick=()=>speak(lec.text, 0.92);
+        const ta=wrap.querySelector('textarea'); const wc=wrap.querySelector('.wordcount');
+        ta.addEventListener('input', ()=>{
+          const n = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
+          wc.textContent = n+' 단어 (목표 50–70)';
+          wc.className = 'wordcount '+(n>=50&&n<=70?'ok':(n>0?'warn':''));
+          if(n>=50 && n<=70) { bump('listening'); }
+        });
+        el.appendChild(wrap);
+      });
+    } else if(tab.key==='shortq'){
+      const grid=document.createElement('div'); grid.className='grid g2';
+      SHORT_QA.forEach(item=>{
+        const wrap=document.createElement('div'); wrap.className='card';
+        wrap.innerHTML = `<span class="pill ${item.level.toLowerCase()}">${item.level}</span>
+          <div style="margin:10px 0;"><button class="btn small teal">▶ 질문 듣기</button></div>
+          <button class="btn secondary small">정답 보기</button>
+          <div class="feedback good" style="display:none; margin-top:8px;">${item.a}</div>`;
+        wrap.querySelector('button.teal').onclick=()=>speak(item.q,0.95);
+        wrap.querySelector('button.secondary').onclick=(e)=>{ wrap.querySelector('.feedback').style.display='block'; bump('listening'); };
+        grid.appendChild(wrap);
+      });
+      el.appendChild(grid);
+    } else {
+      LISTEN_MCQ.forEach((item,idx)=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='14px';
+        wrap.innerHTML = `<span class="pill ${item.level.toLowerCase()}">${item.level}</span>
+          <div style="margin:10px 0;"><button class="btn small teal">▶ 오디오 듣기 (1회)</button></div>`;
+        wrap.querySelector('button.teal').onclick=()=>speak(item.text,0.92);
+        const qHost=document.createElement('div');
+        renderMCQ(qHost, item, null, ()=>bump('listening'));
+        wrap.appendChild(qHost);
+        el.appendChild(wrap);
+      });
+    }
+  });
+}
+
+/* ============================================================
+   SPEAKING VIEW
+   ============================================================ */
+function selfRatingWidget(container, onSave){
+  const box=document.createElement('div'); box.className='card flat'; box.style.marginTop='10px'; box.style.border='1px dashed var(--line)';
+  box.innerHTML = `<div style="font-size:12px; color:var(--ink-500); margin-bottom:6px;">자기평가 (내용 전달 · 발음 · 유창성)</div><div class="rating"></div>`;
+  const rating=box.querySelector('.rating');
+  let val=0;
+  for(let i=1;i<=5;i++){
+    const b=document.createElement('button'); b.textContent=i; b.type='button';
+    b.onclick=()=>{ val=i; [...rating.children].forEach((c,ci)=>c.classList.toggle('on', ci<i)); if(onSave) onSave(i); };
+    rating.appendChild(b);
+  }
+  container.appendChild(box);
+}
+
+function svgChart(item){
+  const w=320,h=180,pad=30;
+  if(item.type==='bar'){
+    const max=Math.max(...item.data.map(d=>d[1]));
+    const bw=(w-pad*2)/item.data.length;
+    let bars='';
+    item.data.forEach((d,i)=>{
+      const bh=(d[1]/max)*(h-pad*2);
+      const x=pad+i*bw+6, y=h-pad-bh;
+      bars+=`<rect x="${x}" y="${y}" width="${bw-12}" height="${bh}" fill="var(--teal)"></rect><text x="${x+(bw-12)/2}" y="${h-pad+14}" font-size="9" text-anchor="middle" fill="var(--ink-500)">${d[0]}</text><text x="${x+(bw-12)/2}" y="${y-4}" font-size="9" text-anchor="middle" fill="var(--ink-700)">${d[1]}</text>`;
+    });
+    return `<svg viewBox="0 0 ${w} ${h}" style="width:100%; max-width:340px;">${bars}<line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="var(--line)"/></svg>`;
+  }
+  if(item.type==='line'){
+    const max=Math.max(...item.data.map(d=>d[1]));
+    const stepX=(w-pad*2)/(item.data.length-1);
+    const pts=item.data.map((d,i)=>[pad+i*stepX, h-pad-(d[1]/max)*(h-pad*2)]);
+    const path=pts.map((p,i)=>(i===0?'M':'L')+p[0]+','+p[1]).join(' ');
+    const dots=pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--brass)"/><text x="${p[0]}" y="${p[1]-8}" font-size="9" text-anchor="middle" fill="var(--ink-700)">${item.data[i][1]}${item.unit.includes('%')?'%':''}</text><text x="${p[0]}" y="${h-pad+14}" font-size="9" text-anchor="middle" fill="var(--ink-500)">${item.data[i][0]}</text>`).join('');
+    return `<svg viewBox="0 0 ${w} ${h}" style="width:100%; max-width:340px;"><path d="${path}" fill="none" stroke="var(--teal)" stroke-width="2"/>${dots}<line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="var(--line)"/></svg>`;
+  }
+  // pie
+  const total=item.data.reduce((a,d)=>a+d[1],0);
+  const cx=90,cy=90,r=70; let ang=-90;
+  const colors=['var(--teal)','var(--brass)','var(--good)','var(--danger)'];
+  let paths=''; let legend='';
+  item.data.forEach((d,i)=>{
+    const slice=d[1]/total*360;
+    const x1=cx+r*Math.cos(ang*Math.PI/180), y1=cy+r*Math.sin(ang*Math.PI/180);
+    ang+=slice;
+    const x2=cx+r*Math.cos(ang*Math.PI/180), y2=cy+r*Math.sin(ang*Math.PI/180);
+    const large = slice>180?1:0;
+    paths+=`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} Z" fill="${colors[i%colors.length]}"/>`;
+    legend+=`<div style="display:flex; align-items:center; gap:6px; font-size:11.5px; margin-bottom:3px;"><span style="width:9px;height:9px;border-radius:2px;background:${colors[i%colors.length]};display:inline-block;"></span>${d[0]} — ${d[1]}%</div>`;
+  });
+  return `<div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;"><svg viewBox="0 0 180 180" style="width:150px;">${paths}</svg><div>${legend}</div></div>`;
+}
+
+function renderSpeakingView(){
+  const tabHost=document.getElementById('spTabs'), host=document.getElementById('spHost');
+  const tabs=[
+    {label:'Read Aloud',key:'ra'},{label:'Repeat Sentence',key:'rs'},{label:'Describe Image',key:'di'},
+    {label:'Retell Lecture',key:'rl'},{label:'Answer Short Q.',key:'asq'},{label:'Respond to Situation',key:'rts'},
+    {label:'Summarize Discussion',key:'sgd'}
+  ];
+  buildTabs(tabHost, host, tabs, (tab,el)=>{
+    if(tab.key==='ra'){
+      LEVELS.forEach(lv=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='16px';
+        wrap.innerHTML = `<span class="pill ${lv.toLowerCase()}">${lv}</span>
+          <div class="passage" style="margin:10px 0;">${READ_ALOUD[lv]}</div>
+          <button class="btn brass small">준비 30초 + 응답 40초 시작</button><div class="timerhost" style="margin-top:10px;"></div>`;
+        const th=wrap.querySelector('.timerhost');
+        wrap.querySelector('button').onclick=()=>{
+          runTimer(th, [{label:'준비 시간 — 지문을 눈으로 훑으세요', seconds:30},{label:'지금 소리 내어 읽으세요', seconds:40}], ()=>{ selfRatingWidget(th, ()=>bump('speaking')); });
+        };
+        el.appendChild(wrap);
+      });
+    } else if(tab.key==='rs'){
+      LEVELS.forEach(lv=>{
+        DICTATION[lv].forEach(sent=>{
+          const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='14px';
+          wrap.innerHTML = `<span class="pill ${lv.toLowerCase()}">${lv}</span>
+            <div style="margin:10px 0;"><button class="btn small teal">▶ 문장 듣기</button></div>
+            <button class="btn brass small">응답 15초 시작</button><div class="timerhost" style="margin-top:10px;"></div>`;
+          wrap.querySelector('button.teal').onclick=()=>speak(sent,0.95);
+          const th=wrap.querySelector('.timerhost');
+          wrap.querySelector('button.brass').onclick=()=>{
+            runTimer(th, [{label:'지금 문장을 그대로 따라 말하세요', seconds:15}], ()=>{ selfRatingWidget(th, ()=>bump('speaking')); });
+          };
+          el.appendChild(wrap);
+        });
+      });
+    } else if(tab.key==='di'){
+      DESCRIBE_IMAGE.forEach(item=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='16px';
+        wrap.innerHTML = `<span class="pill ${item.level.toLowerCase()}">${item.level}</span> <b style="margin-left:6px;">${item.title}</b>`;
+        const chartHost=document.createElement('div'); chartHost.style.margin='12px 0'; chartHost.innerHTML=svgChart(item);
+        wrap.appendChild(chartHost);
+        const btn=document.createElement('button'); btn.className='btn brass small'; btn.textContent='준비 25초 + 응답 40초 시작';
+        const th=document.createElement('div'); th.style.marginTop='10px';
+        btn.onclick=()=>{ runTimer(th, [{label:'그래프를 분석하세요 (트렌드·최댓값·최솟값)', seconds:25},{label:'지금 그래프를 설명하세요', seconds:40}], ()=>{ selfRatingWidget(th, ()=>bump('speaking')); }); };
+        wrap.appendChild(btn); wrap.appendChild(th);
+        el.appendChild(wrap);
+      });
+    } else if(tab.key==='rl'){
+      LECTURES.forEach(lec=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='16px';
+        wrap.innerHTML = `<span class="pill ${lec.level.toLowerCase()}">${lec.level}</span> <b style="margin-left:6px;">${lec.title}</b>
+          <div style="margin:10px 0;"><button class="btn small teal">▶ 강의 듣기</button></div>
+          <button class="btn brass small">준비 10초 + 응답 40초 시작</button><div class="timerhost" style="margin-top:10px;"></div>`;
+        wrap.querySelector('button.teal').onclick=()=>speak(lec.text,0.92);
+        const th=wrap.querySelector('.timerhost');
+        wrap.querySelector('button.brass').onclick=()=>{
+          runTimer(th, [{label:'요지를 정리하세요', seconds:10},{label:'지금 강의를 자신의 말로 요약하세요', seconds:40}], ()=>{ selfRatingWidget(th, ()=>bump('speaking')); });
+        };
+        el.appendChild(wrap);
+      });
+    } else if(tab.key==='asq'){
+      const grid=document.createElement('div'); grid.className='grid g2';
+      SHORT_QA.forEach(item=>{
+        const wrap=document.createElement('div'); wrap.className='card';
+        wrap.innerHTML = `<span class="pill ${item.level.toLowerCase()}">${item.level}</span>
+          <div style="margin:10px 0;"><button class="btn small teal">▶ 질문 듣기</button></div>
+          <button class="btn brass small">응답 10초 시작</button><div class="timerhost" style="margin-top:8px;"></div>`;
+        wrap.querySelector('button.teal').onclick=()=>speak(item.q,0.95);
+        const th=wrap.querySelector('.timerhost');
+        wrap.querySelector('button.brass').onclick=()=>{
+          runTimer(th, [{label:'한두 단어로 즉시 답하세요', seconds:10}], ()=>{
+            th.innerHTML+=`<div class="feedback good" style="margin-top:8px;">예시 답: ${item.a}</div>`; bump('speaking');
+          });
+        };
+        grid.appendChild(wrap);
+      });
+      el.appendChild(grid);
+    } else if(tab.key==='rts'){
+      SITUATIONS.forEach(s=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='14px';
+        wrap.innerHTML = `<span class="pill ${s.level.toLowerCase()}">${s.level}</span><div class="passage" style="margin:10px 0;">${s.text}</div>
+          <button class="btn brass small">준비 10초 + 응답 40초 시작</button><div class="timerhost" style="margin-top:10px;"></div>`;
+        const th=wrap.querySelector('.timerhost');
+        wrap.querySelector('button').onclick=()=>{
+          runTimer(th, [{label:'상황을 파악하세요', seconds:10},{label:'지금 응답하세요', seconds:40}], ()=>{ selfRatingWidget(th, ()=>bump('speaking')); });
+        };
+        el.appendChild(wrap);
+      });
+    } else {
+      GROUP_DISCUSSION.forEach(d=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='16px';
+        wrap.innerHTML = `<span class="pill ${d.level.toLowerCase()}">${d.level}</span> <b style="margin-left:6px;">${d.title}</b>
+          <div style="margin:10px 0;"><button class="btn small teal">▶ 토론 듣기</button></div>
+          <button class="btn brass small">준비 10초 + 응답 2분 시작</button><div class="timerhost" style="margin-top:10px;"></div>`;
+        wrap.querySelector('button.teal').onclick=()=>speak(d.text,0.95);
+        const th=wrap.querySelector('.timerhost');
+        wrap.querySelector('button.brass').onclick=()=>{
+          runTimer(th, [{label:'화자별 입장을 정리하세요', seconds:10},{label:'지금 토론을 균형있게 요약하세요', seconds:120}], ()=>{ selfRatingWidget(th, ()=>bump('speaking')); });
+        };
+        el.appendChild(wrap);
+      });
+    }
+  });
+}
+
+/* ============================================================
+   WRITING VIEW
+   ============================================================ */
+function renderWritingView(){
+  const tabHost=document.getElementById('wrTabs'), host=document.getElementById('wrHost');
+  const tabs=[{label:'Summarize Written Text',key:'swt'},{label:'Write Essay',key:'essay'}];
+  buildTabs(tabHost, host, tabs, (tab, el)=>{
+    if(tab.key==='swt'){
+      SWT_PASSAGES.forEach(p=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='18px';
+        wrap.innerHTML = `<span class="pill ${p.level.toLowerCase()}">${p.level}</span>
+          <div class="passage" style="margin:10px 0;">${p.text}</div>
+          <button class="btn brass small">10분 타이머 시작</button>
+          <div class="timerhost" style="margin-top:10px;"></div>
+          <textarea rows="3" placeholder="한 문장(5–75단어)으로 요약하세요..." style="margin-top:8px;"></textarea>
+          <div class="wordcount">0 단어</div>`;
+        const th=wrap.querySelector('.timerhost');
+        wrap.querySelector('button').onclick=()=>runTimer(th, [{label:'요약문 작성 중', seconds:600}], ()=>toast('시간 종료! 답안을 마무리하세요.'));
+        const ta=wrap.querySelector('textarea'), wc=wrap.querySelector('.wordcount');
+        ta.addEventListener('input', ()=>{
+          const n = ta.value.trim()? ta.value.trim().split(/\s+/).length : 0;
+          const sentences = (ta.value.match(/[.!?]/g)||[]).length;
+          wc.textContent = n+' 단어 · 문장부호 '+sentences+'개 (목표: 5–75단어, 한 문장)';
+          wc.className = 'wordcount '+(n>=5&&n<=75?'ok':(n>0?'warn':''));
+          if(n>=5 && n<=75) bump('writing');
+        });
+        el.appendChild(wrap);
+      });
+    } else {
+      ESSAY_PROMPTS.forEach(p=>{
+        const wrap=document.createElement('div'); wrap.className='card'; wrap.style.marginBottom='18px';
+        wrap.innerHTML = `<span class="pill ${p.level.toLowerCase()}">${p.level}</span>
+          <div class="passage" style="margin:10px 0;">${p.prompt}</div>
+          <button class="btn brass small">20분 타이머 시작</button>
+          <div class="timerhost" style="margin-top:10px;"></div>
+          <textarea rows="8" placeholder="여기에 에세이를 작성하세요 (200–300단어)..." style="margin-top:8px;"></textarea>
+          <div class="wordcount">0 단어</div>`;
+        const th=wrap.querySelector('.timerhost');
+        wrap.querySelector('button').onclick=()=>runTimer(th, [{label:'에세이 작성 중', seconds:1200}], ()=>toast('시간 종료! 답안을 마무리하세요.'));
+        const ta=wrap.querySelector('textarea'), wc=wrap.querySelector('.wordcount');
+        ta.addEventListener('input', ()=>{
+          const n = ta.value.trim()? ta.value.trim().split(/\s+/).length : 0;
+          wc.textContent = n+' 단어 (목표: 200–300단어)';
+          wc.className = 'wordcount '+(n>=200&&n<=300?'ok':(n>0?'warn':''));
+          if(n>=200 && n<=300) bump('writing');
+        });
+        el.appendChild(wrap);
+      });
+    }
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function startApp(){
+  renderSidebarLevel();
+  renderDashboard();
+  renderDiagnostic();
+  renderOverview();
+  renderVocabView();
+  renderGrammarView();
+  renderReadingView();
+  renderListeningView();
+  renderSpeakingView();
+  renderWritingView();
+}
+initApp();
+
+})();
+</script>
