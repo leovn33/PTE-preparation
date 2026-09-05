@@ -92,20 +92,6 @@
     background:var(--paper-raised); border-right:1px solid var(--line);
     padding:22px 16px; display:flex; flex-direction:column; gap:18px;
   }
-  @media (max-width:840px){
-    /* A full nav+vocab-height sidebar is too tall to pin at the top of a phone screen —
-       sticky here would float over (and swallow taps meant for) the content below it.
-       Instead, the nav becomes a horizontally-scrollable chip row so it takes minimal
-       vertical space and the user reaches the actual content with one swipe/scroll. */
-    .sidebar{border-right:none; border-bottom:1px solid var(--line); padding:14px 14px 12px; gap:10px;}
-    .brand{padding:0;}
-    nav.navlist{flex-direction:row; overflow-x:auto; gap:6px; padding-bottom:2px; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
-    nav.navlist::-webkit-scrollbar{display:none;}
-    .navgroup-label{display:none;}
-    .navitem{width:auto; flex:none; white-space:nowrap; padding:7px 12px;}
-    .level-badge{margin-top:0; padding:8px 12px;}
-    .level-badge .val{font-size:16px; margin-top:0;}
-  }
   .brand{display:flex; align-items:baseline; gap:8px; padding:0 4px;}
   .brand .mark{
     width:30px;height:30px;border-radius:8px;background:var(--ink-900);color:var(--paper);
@@ -137,18 +123,23 @@
   .level-badge .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-500);}
   .level-badge .val{font-family:'Fraunces',serif; font-size:22px; font-weight:600; color:var(--brass); margin-top:2px;}
 
+  @media (max-width:840px){
+    /* A full nav+vocab-height sidebar is too tall to pin at the top of a phone screen —
+       sticky here would float over (and swallow taps meant for) the content below it.
+       Instead, the nav becomes a horizontally-scrollable chip row so it takes minimal
+       vertical space and the user reaches the actual content with one swipe/scroll. */
+    .sidebar{border-right:none; border-bottom:1px solid var(--line); padding:14px 14px 12px; gap:10px;}
+    .brand{padding:0;}
+    nav.navlist{flex-direction:row; overflow-x:auto; gap:6px; padding-bottom:2px; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+    nav.navlist::-webkit-scrollbar{display:none;}
+    .navgroup-label{display:none;}
+    .navitem{width:auto; flex:none; white-space:nowrap; padding:7px 12px;}
+    .level-badge{margin-top:0; padding:8px 12px;}
+    .level-badge .val{font-size:16px; margin-top:0;}
+  }
+
   /* Main */
   main{padding:32px 40px 80px; max-width:980px;}
-  @media (max-width:840px){
-    main{padding:20px 16px 50px;}
-    h1{font-size:22px;}
-    .lede{font-size:13.5px;}
-    .card{padding:14px;}
-    .qcard{padding:13px;}
-    .flashcard{padding:18px; min-height:120px;}
-    table{font-size:12.5px;}
-    th,td{padding:7px 8px;}
-  }
   .view{display:none;}
   .view.active{display:block;}
   .eyebrow{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--brass); font-weight:700; margin-bottom:6px;}
@@ -353,6 +344,21 @@
   .gate-card .err{font-size:12.5px; color:var(--danger); margin-top:10px; display:none;}
   .gate-card .btn{width:100%; justify-content:center; margin-top:18px;}
   .gate-card .skip{display:block; text-align:center; margin-top:12px; font-size:12px; color:var(--ink-500); cursor:pointer; text-decoration:underline; background:none; border:none;}
+
+  /* ---- Mobile polish (kept last in the stylesheet so it wins over the
+     same-specificity base rules above, regardless of where those are
+     defined in the file) ---- */
+  @media (max-width:840px){
+    main{padding:20px 16px 50px;}
+    h1{font-size:22px;}
+    .lede{font-size:13.5px;}
+    .card{padding:14px;}
+    .qcard{padding:13px;}
+    .flashcard{padding:18px; min-height:120px;}
+    table{font-size:12.5px;}
+    th,td{padding:7px 8px;}
+    .gate-card{padding:22px;}
+  }
 </style>
 </head>
 <body>
